@@ -28,6 +28,7 @@ JavaScript motoru type dönüşümünden sonra `===` (strirct equality)’yi kul
 
 Yani üçlü eşitlik kodunuzu daha anlaşılır hale getirir ve sizi bazı garip hatalardan kurtarır.
 
+---
 
 ## Virgül Operatörü (Comma Oparator)
 
@@ -55,6 +56,66 @@ const b = () => 'b';
 const isValid = true;
 const result = isValid ? (a(), b()) : 'Nope';
 console.log(result); // b
+```
+
+---
+
+## Spread Operatörü (Spread Operator)
+
+Geçtiğimiz günlerde JavaScript'e gelen yeni özellikleri okumaya başladığımda beni en çok heyecanlandıran şey spread operatörü olmuştu. Çeşitli yerlerde genişletilebilir iterable (veya stringler) oluşturmamıza izin verir. Genellikle bu operatörü object oluştururken kullanırım. Örneğin: 
+
+```javascript
+const name = {
+  firstName: "Krasimir",
+  lastName: "Tsonev"
+};
+
+// Adding fields to an object
+const profile = { age: 36, ...name };
+console.log(profile); // age, first, last name
+```
+
+Bu yöntem property'leri overwrite etmek için de kullanılabilir. Diyelim ki yukarıdaki profil alanında yaş alanını güncellemek istiyoruz. Şu şekilde yapabiliriz:
+
+```javascript
+const updates = { age: 37 };
+const updatedProfile = { ...profile, ...updates };
+console.log(updatedProfile); // age=37
+```
+
+Bir başka popüler kullanım da birden çok argümanı fonksiyona iletmek:
+
+```javascript
+const values = [10, 33, 42, 2, 9];
+console.log(Math.max(...values));
+// instead of
+console.log(Math.max(10, 33, 42, 2, 9));
+```
+
+Son olarak spread operatör array'leri klonlama konusunda iyi iş çıkarır. Deep klon değil de orijinal object'in mutasyonunu önlemek için yapar. Fonksiyonlara, object'leri ve array'leri referansa göre (bu tamamen doğru değil) nasıl ilettiğimizi hatırlayın. Bu gibi benzer durumlarda array'lerle çalışıp onları değiştirmemek isteyebiliriz. Aşağıdaki örneğe bakabilirsiniz:
+
+```javascript
+const values = [10, 33, 42, 2, 9];
+function findBiggest(arr) {
+  return arr.sort((a, b) => (a > b ? -1 : 1)).shift();
+}
+const biggest = findBiggest(values);
+console.log(biggest), // 42
+console.log(values); // [33, 10, 9, 2]
+```
+
+`findBiggest` fonksiyonu array içerisindeki elemanları sıralar ve en büyük olanı geri döner. Buradaki problem bu işlemi array'i mutasyona uğratan `shift` metoduyla yapmasıdır. Sonucunda ilk array'den daha az elemana sahip bir array kalır elimizde.
+
+Bu sorunu çözmek için spread operatörünü kullanıyoruz.
+
+```javascript
+const values = [10, 33, 42, 2, 9];
+function findBiggest(arr) {
+  return [...arr].sort((a, b) => (a > b ? -1 : 1)).shift();
+}
+const biggest = findBiggest(values);
+console.log(biggest), // 42
+console.log(values); // [10, 33, 42, 2, 9]
 ```
 
 
