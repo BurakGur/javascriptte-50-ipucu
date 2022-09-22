@@ -61,7 +61,7 @@ console.log(result); // b
 ---
 
 ## Spread Operatörü (Spread Operator)
-
+![Spread Operator](https://50tips.dev/tip-assets/3/art.jpg)
 Geçtiğimiz günlerde JavaScript'e gelen yeni özellikleri okumaya başladığımda beni en çok heyecanlandıran şey spread operatörü olmuştu. Çeşitli yerlerde genişletilebilir iterable (veya stringler) oluşturmamıza izin verir. Genellikle bu operatörü object oluştururken kullanırım. Örneğin: 
 
 ```javascript
