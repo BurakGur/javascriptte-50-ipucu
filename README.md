@@ -173,6 +173,53 @@ const user = { name: 'Krasimir' };
 console.log(user?.skills?.[0]); // undefined
 ```
 
+---
 
+## Referansa veya Değere Göre (By Reference or By Value)
+
+![By Reference or By Value](https://50tips.dev/tip-assets/6/art.jpg)
+
+Programlamada değeri iletmek (passing a variable) ifadesi vardır. Bu bir fonksiyonu parametre ile çağırdığınız anda gerçekleşir. Bazı programlama dillerinde bu parametreler değere göre bazı dillerde de referansa göre iletilir. JavaScript'te ise biraz karma bir yapı var. 
+
+Primitive (ilkel) tipler -number, string vb. gibi- değeri iletirken non-primitive (ilkel olmayan) tipler ise -object, array vb. gibi- referansın bir kopyasını iletir. Bunu bir kaç örnekle açıklayalım.
+
+```javascript
+var numOfUsers = 24;
+function doSomething(num) {
+  num += 1;
+}
+
+doSomething(numOfUsers);
+
+console.log(numOfUsers); // 24
+```
+
+`numOfUsers`'ı var ile tanımlasak da aslından onun değerini iletiyoruz. Yani fonksiyonun içindeki değeri alıyoruz ama onun orijinal değerini değiştiremiyoruz.
+
+İşte başka bir örnek: 
+
+```javascript
+const user = { score: 78 }
+function mutates(obj) {
+  obj.score += 12;
+}
+
+mutates(user);
+console.log(user.score); // 90
+```
+
+Burada `user`'ın referansının bir kopyası iletilir. Object'in içerisindeki alanları değiştirebiliyoruz fakat orijinal tanımı değiştiremiyoruz. Aşağıdaki kod örneği bunu kanıtlıyor: 
+
+```javascript
+const user = { score: 78 }
+function doesntMutate(obj) {
+  obj = { score: 120 }
+}
+
+doesntMutate(user);
+console.log(user.score); // 78
+```
+
+Bazı programlama dillerinde ise `obj = { score: 120 }` tanımlamasının `user` object'inin değerini değiştirebileceğini de not etmeliyiz.
 
 
