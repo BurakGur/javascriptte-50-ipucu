@@ -118,4 +118,39 @@ console.log(biggest), // 42
 console.log(values); // [10, 33, 42, 2, 9]
 ```
 
+---
+
+## Destructuring
+
+![Destructing](https://50tips.dev/tip-assets/4/art.jpg)
+
+İlk olarak bazı programlama dillerde destructuring gördüm. Bunu anlamam biraz zamanımı aldı ama sonunda mantığını anladım. Artık JavaScript'te ne kadar güzel olabileceğini düşünmeden duramıyordum. Bundan bir kaç ay sonra destructuring tanıtıldı. Destructuring array ve object elemanlarını tek tek değişkenlere çıkaran bir JavaScript ifadesidir. Şu şekilde bir object'i destruct ederiz: 
+
+```javascript
+const user = { name: "Krasimir", job: "dev" };
+const { name, job } = user;
+console.log(`${name}, position: ${job}`); // Krasimir, position: dev
+```
+
+Bu tanımlamanın diğer bir adı da `unpacking`'dir. Burada da gördüğümüz gibi `name` ve `job` alanları `user`object'ini içerisinden gelmektedir.
+
+Array'lerde de benzer şekilde çalışır:
+
+```javascript
+// destructuring array
+const arr = ["oranges", "apples", "bananas"];
+const [a, b, c] = arr;
+console.log(`I like ${a}`); // I like oranges
+```
+
+Sonunda eğer tanımlamaları beğenmediysek alias(takma ad) da oluşturabiliriz. Aşağıdaki örnekte `name` `who` olurken `job` da `position` olur:
+
+```javascript
+// destructuring with renaming
+const user = { name: "Krasimir", job: "dev" };
+const { name: who, job: position } = user;
+console.log(`${who}, position: ${position}`); // Krasimir, pos
+```
+
+
 
