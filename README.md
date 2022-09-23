@@ -152,5 +152,27 @@ const { name: who, job: position } = user;
 console.log(`${who}, position: ${position}`); // Krasimir, pos
 ```
 
+---
+
+## Opsiyonel Zincirleme (Optional Chaining)
+
+![Optional Chaining](https://50tips.dev/tip-assets/5/art.jpg)
+
+JavaScript'le çalışırken favori hatam `Cannot read properties of undefined`'dır. İşte bu hataya neden olan kod örneği:
+
+```javascript
+const user = { name: 'Krasimir' };
+console.log(user.skills[0]);
+// Uncaught TypeError: Cannot read properties of undefined (reading '0')
+```
+
+Bu durumu önlemek için kontroller koyup helper'lar (yardımcılar) kullanırız. Deeply nested property'lerindeki (iç içe geçmiş property'ler yani object içerisindeki object veya array içerisindeki object vs. gibi) değeri okumak her zaman hataların kaynağı olmuştur. Bugün JavaScript'in bu sorunu çözen bir özelliği var. Bu özelliğe optional chaining (opsiyonel zincirleme) denir. İç içe geçmiş alanlarda güvenli erişim sunuyor. Eğer iç içe geçmiş alanlardan herhang birisi `undefined` veya `null` olduğunda tüm ifade `undefined` olur yani hata vermez.
+
+```javascript
+const user = { name: 'Krasimir' };
+console.log(user?.skills?.[0]); // undefined
+```
+
+
 
 
