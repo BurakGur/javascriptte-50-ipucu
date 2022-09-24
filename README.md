@@ -222,4 +222,48 @@ console.log(user.score); // 78
 
 Bazı programlama dillerinde ise `obj = { score: 120 }` tanımlamasının `user` object'inin değerini değiştirebileceğini de not etmeliyiz.
 
+---
+
+## Reducing 
+
+![Reducing](https://50tips.dev/tip-assets/7/art.jpg)
+
+Genellike object'leri bir şekilde diğer şekle dönüştürmemiz gerekir. Bu tarz dönüşümler için benim favori aracım reduce fonksiyonlarıdır. Aşağıdaki gibi içerisinde object'leri içeren bir array'imizin olduğunu varsayalım:
+
+```javascript
+const positions = [
+  { languages: ["HTML", "JavaScript", "PHP"], years: 4 },
+  { languages: ["JavaScript", "PHP"], years: 2 },
+  { languages: ["C", "PHP"], years: 3 },
+];
+```
+
+Ve her bir dil için toplam `years` değerine ihtiyacımız var. Çözüm döngü oluşturup içerisindeki bazı değerleri almayı içerir. Tam olarak `reduce` işlemi şunun için yapılır: 
+
+```javascript
+const yearsOfWriting = positions.reduce((res, { languages, years }) => {
+  languages.forEach((lang) => {
+    if (!res[lang]) res[lang] = 0;
+    res[lang] += years;
+  });
+  return res;
+}, {});
+
+console.log(yearsOfWriting); // { HTML: 4, JavaScript: 6, PHP: 9, C: 3 }
+
+```
+
+`reduce` Array prototipinin bir metodudur. Array içerisindeki elemanları döngüye sokarak değer toplamamızı sağlar. 
+
+Ayrıca bu metod object'ler için de kullanılabilir. Doğrudan değil ama object'i `Object.keys` ile iletebiliriz. `Object.keys ` ile array'in tüm property'lerini alacağız ve bunları yineleyerek işlemimizi yapacağız. Örneğe devam edelim ve başka bir soru soralım: Toplamda kaç yıl(`years`) var?
+
+```javascript
+const yearsOfWriting = { HTML: 4, JavaScript: 6, PHP: 9, C: 3 };
+const totalYears = Object.keys(yearsOfWriting).reduce((total, key) => {
+  return total + yearsOfWriting[key];
+}, 0);
+
+console.log(totalYears); // 22
+```
+
 
