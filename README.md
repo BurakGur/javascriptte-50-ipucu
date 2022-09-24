@@ -266,4 +266,67 @@ const totalYears = Object.keys(yearsOfWriting).reduce((total, key) => {
 console.log(totalYears); // 22
 ```
 
+---
+
+## Async/await
+
+![Async/await](https://50tips.dev/tip-assets/8/art.jpg)
+
+JavaScript'te eşzamansızlık konusunu çok geniş bir alan. Çünkü JavaScript dili asenkron işlemleri çözmek için bir çok mekanizma sunmaktadır. Yıllar geçtikçe bu mekanizmalar da değişiyor.  Tarihsel olarak, native APIs bu sorunu çözmek için tanıtılan ilk  yöntemdi. Bu yöntemde fonksiyon belirsiz bir gelecekte çağırılan `callback` isimli bir fonksiyonu kabul eder.
+
+```javascript
+const fs = require('fs');
+
+fs.readFile('./content.md', function callback(error, result) {
+  if (error) {
+    // in case of error
+  } else {
+    // use the data
+  }
+})
+```
+
+`callback` fonksiyonu bir işlem yapılmasına göre tetiklenir. Ya dosyayı başarılı bir şekilde okuduk ya da burada bir hata var. Potansiyel hatayı ilk argüman olarak kabul etmek güzel bir yöntemdi. Bu düzen hata çözmeyi de teşvik eder. Fakat çok fazla `callback` kullanmak derinlemesine içe içe geçmiş fonksiyonlara yol açar ve `callback hell` (callback cehennemi) olarak isimlendirilir.
+
+```javascript
+functionA(param, function (err, result) {
+  functionB(param, function (err, result) {
+    functionC(param, function (err, result) {
+      // And so on...
+    });
+  });
+});
+```
+
+`callback hell` 'i düzeltmesi gereken API ise `promise` olacaktı. `promise` gelecekteki işlemlerimizi üstlenecek bir object'tir. Tabi başarılı veya başarısız da olabilir. Bu object'ler üç durumu vardır: `resolved (çözüldü) `,  `rejected(reddedildi)` ve `pending(bekleniyor) `'dur. 
+
+İşte promise'leri kullanarak dönüştürülmüş aynı örnek: 
+
+```javascript
+import { readFile } from 'fs/promises';
+readFile('./content.md')
+  .then(data => { ... })
+  .catch(err => { ... });
+```
+
+Promise'lerin callback'ler gibi problemleri yoktu fakat mükemmel de değildir. İç içe veya birbirine bağlı promise'ler yazdığımızda yeniden karışık kod blocklarıyla karşılaşabiliriz.
+
+Günümüzde ise herkes neredeyse başka bir API'yi kullanıyor: `async/await` . Bu API, bize fonksiyonun önüne eklenen `async` kelimesiyle asenkron fonksiyon tanımlamıza izin veriyor. Ardından fonksiyonun içerisinde promise işlemlerin öncesinde `await` kelimesini ekleyebiliriz. Bu fonksiyonu promise işlemi çözülene (resolved) kadar duraklatacaktır. İşte aynı örneğin `async/await` kullanılarak yeniden yazılmış hali: 
+
+```javascript
+import { readFile } from 'fs/promises';
+
+async function getContent() {
+  try {
+    const data = await readFile('./content.md');
+    // use the data
+  } catch(err) {
+    // in case of error
+  }
+}
+
+getContent();
+```
+
+Önemli bir gerçek de her `async` kullanılan tüm fonksiyonların promise ile sonuçlanmasıdır. Örnek olarak aşağıdaki `getResult` fonksiyonu 10 döndürmez, onun yerine 10 değeriyle çözülen (resolved) bir promise döndürür.
 
