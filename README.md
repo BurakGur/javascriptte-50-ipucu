@@ -330,3 +330,58 @@ getContent();
 
 Önemli bir gerçek de her `async` kullanılan tüm fonksiyonların promise ile sonuçlanmasıdır. Örnek olarak aşağıdaki `getResult` fonksiyonu 10 döndürmez, onun yerine 10 değeriyle çözülen (resolved) bir promise döndürür.
 
+---
+
+## Iterable Protocol 
+
+![Iterable Protokol](https://50tips.dev/tip-assets/9/art.jpg)
+
+Iterable protokol hafife alınıyor. İnsanların kullanmadığını görüyorum ve bu beni çok üzüyor. Çünkü aslında muhteşem bir araç. Spesifik object'lerde nasıl döngü yapacağımızı belirler. Başka bir deyişle özelleştirilmiş iterating davranışı oluşturmamıza imkan verir. `@@iterator` (`Sysbol.iterator`'un kısa yazılışı) isimli bir property oluşturmamız gerekiyor. Bu property `iterable protocol` ile eşleşen bir object dönen ve herhangi bir argüman almayan fonksiyona eşit olması gerekiyor. İşte örnek:
+
+```javascript
+const user = {
+  data: ["JavaScript", "HTML", "CSS"],
+  [Symbol.iterator]: function () {
+    let i = 0;
+    return {
+      next: () => ({
+        value: this.data[i++],
+        done: i > this.data.length,
+      }),
+    };
+  },
+};
+for (const skill of user) { console.log(skill); }
+```
+
+Bu protokol `next` metodunu dönen bir object almak zorundadır. Bu metod  `value` ve `done` alanlarını alan bir object ile sonuçlanmalıdır. `value` her şey olabilir ve `done` ise iteration işleminin bitip bitmediğini gösteren bir boolean değeridir. 
+
+Yukarıdaki örnekte fark ederseniz `user` değeri array değildir ama array gibi kullanıyoruz. Bunun nedeni özelleştirilmiş iterator tanımı yapmamızdandır. Bu tanımlama `"JavaScript"`, `"HTML"` ve `"CSS"` (sırasıyla) çıktısını verir.
+
+Bu özellikle karmaşık datalar ve iç içe geçmiş property'lere erişmek istediğimizde kullanışlı olur. Object'lerimi destroy edilmesini kolaylaştırmak için iterable protokol kullanmak hoşuma gidiyor.
+
+```javascript
+const user = {
+  name: { first: 'Krasimir', last: 'Tsonev' },
+  position: 'engineer',
+  [Symbol.iterator]: function () {
+    let i = 0;
+    return {
+      next: () => {
+        i++;
+        if (i === 1) {
+          return { value: `${this.name.first} ${this.name.last}`, done: false };
+        } else if (i === 2) {
+          return {value: this.position, done: false };
+        }
+        return { done: true }
+      }
+    }
+  }
+}
+const [name, position] = user;
+console.log(`${name}: ${position}`); // Krasimir Tsonev: engineer
+
+```
+
+Tanım olarak, tüm iterable object'lerini destory edebiliriz. Eğer object'lerimiz iterable değilse de yukarıdaki gibi iterable protocol tanımlayarak destroy işlemlerimizi yapabiliriz.
