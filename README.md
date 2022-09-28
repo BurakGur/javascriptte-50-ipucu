@@ -385,3 +385,68 @@ console.log(`${name}: ${position}`); // Krasimir Tsonev: engineer
 ```
 
 Tanım olarak, tüm iterable object'lerini destory edebiliriz. Eğer object'lerimiz iterable değilse de yukarıdaki gibi iterable protocol tanımlayarak destroy işlemlerimizi yapabiliriz.
+
+---
+
+## Generators
+
+![Generators](https://50tips.dev/tip-assets/10/art.jpg)
+
+Aynı `iterable protocol` gibi, JavaScript'te `generator` kullanmak da popüler değil. Topluluk bu API üzerinde çok fazla çalışmıyor. Fakat bence  potansiyeli var. Özellikle de asenksron süreçleri çözmede. 
+
+Generator fonksiyonlar çağrıldığında iterable generator döndüren özel tipli bir fonksiyondur. Bu fonksiyonun içindeki kodun hemen yürütülmediği anlamına gelir. Generator'de `next` metodunu çağırmamız gerekiyor. Ardından yürütme işlemi `yield` ifadesine kadar devam eder. Aşağıdaki kod örneği bu yapıyı gösteriyor:
+
+```javascript
+function* calculate() {
+  yield 10;
+  const result = yield 5;
+  console.log(`Result = ${result}`);
+}
+
+const g = calculate();
+const res1 = g.next(); // {value: 10, done: false}
+const res2 = g.next(); // {value: 5, done: false}
+g.next(res1.value + res2.value); // Result = 15
+```
+
+Bu örneği satır satır okuyup ne olduğunda bakalım:
+
+- `const generator = calculate()` - bu noktada fonksiyonun içerisi yürütülmüyor yani çalışmıyor. Biz sadece generator üretiyoruz. Aslında `calculate` istediği kadar generator üretebilir. Farklı iterable'lar olacaktır böylece.
+- `const res1 = generator.next()` - burada fonksiyon çalışıyor ve yürütme ilk `yield` ifadesinde duruyor. `yield` değeri ne olursa olsun `value` alanı objede döndürülür.
+- `const res2 = generator.next()` - yukarıdaki satırla value değerinin 5 olması dışında aynı. Ve `result` değerini almadan önce fonksiyonun duraklatıldığını söyleyebiliriz. Bu noktada, `results` değeri hala tanımlanmamıştır. Sadece tanımdan sonraki `next` metodu dışardan çağrıldığında işlem tamamlanır.
+- `generator.next(res1.value + res2.value)` - bu satır daha önce dışa çıkarılan (export edilen) tam sayıların toplamını göndererek generator işlemini devam ettirir.
+
+Generator'ın datayı gönderme ve alma yeteneği onu benzersiz kılar ve bazı ilginç implementasyonlara olanak sağlar. Bunlardan en yaygın olanı da komut deseni (command pattern) implementasyonudur. Bir kaç adımdan oluşan bir şeyi nasıl oluşturacağımızı düşünün. Örneğin, uzak sunucudan bir resim URL'i almak ve `<img>` etiketi oluşturmak istiyoruz. Generator'le nasıl görüneceği şu şekildedir:
+
+```javascript
+commander(robot());
+
+function* robot() {
+  const catURL = yield ["get-cat"];
+  const imgTag = yield ["format", catURL];
+  console.log(imgTag);
+}
+async function commander(gen, passBack) {
+  let state = gen.next(passBack);
+  switch (state.value ? state.value[0] : null) {
+    case "get-cat":
+      const res = await fetch("https://api.thecatapi.com/v1/images/search");
+      const data = await res.json();
+      return commander(gen, data[0].url);
+    case "format":
+      return commander(gen, `<img src="${state.value[1]}" />`);
+  }
+  if (!state.done) {
+    commander(gen);
+  }
+}
+```
+
+```javascript
+// after a second or two we'll get:
+// <img src="https://cdn2.thecatapi.com/images/<random id here>.jpg" />
+```
+
+Generator fonksiyonumuz `robot` , komutları gönderiyor ve asenkron olarak sonuçları alıyor. `get-cat` [thecatapi.com](thecatapi.com) adresine HTTP isteği gönderen ve rastgele resim URL'i döndüren bir komuttur. `format` başka bir komuttur ve resim etiketi döndürür. Ayrıca generator'ler, async/await'e benzer şekilde fonksiyonumuzun eşzamanlı (synchronous) görünmesini sağlar. 
+
+
