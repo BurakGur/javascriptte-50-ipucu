@@ -449,4 +449,39 @@ async function commander(gen, passBack) {
 
 Generator fonksiyonumuz `robot` , komutları gönderiyor ve asenkron olarak sonuçları alıyor. `get-cat` [thecatapi.com](thecatapi.com) adresine HTTP isteği gönderen ve rastgele resim URL'i döndüren bir komuttur. `format` başka bir komuttur ve resim etiketi döndürür. Ayrıca generator'ler, async/await'e benzer şekilde fonksiyonumuzun eşzamanlı (synchronous) görünmesini sağlar. 
 
+---
 
+## Priting JSON
+
+![Printings JSON](https://50tips.dev/tip-assets/11/art.jpg)
+
+Bu bölüm, her developer'ın sıklıkla kullandığındığı debugging tool olan konsola yazdırmayı ele almaktadır. JavaScript'te her zaman veri yapılarıyla (data structures) çalışırız. Sıklıkla object'lerin içine bakma ihtiyacımız olur. Objeyi yazdırmadaki favorilerimden bir tanesi de `JSON.stringify` API'ını kullanmaktır.
+
+```javascript
+const user = {
+  name: "Molecule Man",
+  age: 29,
+  secretIdentity: "Dan Jukes",
+  powers: ["Radiation resistance", "Radiation blast"],
+};
+
+console.log(JSON.stringify(user, null, 2));
+```
+
+`null` ve `2` parametrelerine dikkat edin. Bunlarsız, her şey tek bir satırda görünecektir. İkinci parametre olan `null` bir yenileyici fonksiyondur. Özelleştirilmiş geçişleri yapmak istediğimizde işe yarar. Bazen kendi replacer fonksiyonumu yazmak zorunda kaldım. Bunun nedeni de bazen object property'lere spesifik bir şekilde ulaşmak istememdi. Ayrıca daha popüler olan kullanım senaryosu ise circular structure problemini çözmektir. DOM elementi bu tarz structure için mükemmel bir örnektir. Her DOM elementi, alt öğesini (children) işaret eden üst elementini işaret eder ve bu şekilde devam eder.
+
+`JSON.stringify` ve `JSON.parse` ile yapılacak bir başka trick de obje klonlamaktır. Örnek olarak:
+
+```javascript
+const user1 = {
+  name: "Molecule Man",
+  age: 29,
+  secretIdentity: "Dan Jukes",
+  powers: ["Radiation resistance", "Radiation blast"],
+};
+const user2 = JSON.parse(JSON.stringify(user1));
+
+console.log(user1 === user2); // false
+```
+
+Bu işlemin her zaman başarıya ulaştığını söyleyemeyiz. Eğer objenin yukarıda da belirttiğimiz gibi circular bağımlılıkları varsa işlem başarısız olur. 
