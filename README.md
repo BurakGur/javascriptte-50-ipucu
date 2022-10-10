@@ -528,3 +528,27 @@ createUser(); // { name:"Krasimir" }
 ```
 
 Bu API'yi genel olarak güvenlik data işlemleri için özellikle de data eksik veya tamamlanmış olduğunda kullanıyorum.
+
+---
+
+## Capture Groups
+
+![Capture Groups](https://50tips.dev/tip-assets/13/art.jpg)
+
+Çoğu programlama dilinde olduğunda JavaScript de regular expression'ları desteklemektedir. 15 yıldan uzun süredir yazılım geliştiriyorum ve regular expression alanında hiç bir zaman iyi olmadım fakat benim favori özelliğimi paylaşmak istiyorum: capture groups. Capture groups, bir çok problemi tek bir satır kodla çözebilir.
+
+Geçenlerde bir dosyanın ismini `script.js`'ten `script.prod.js`'e çevirdim. Capture groups bunun için mükemmel bir örnek: 
+
+```javascript
+function renameFile(file, postfix) {
+  return file.replace(
+    /(\.(js|ts|jsx|tsx))/i,
+    `.${postfix}$1`
+  );
+}
+
+console.log(renameFile("public/js/script.js", "prod"));
+// public/js/script.prod.js
+```
+
+`(\.(js|ts|jsx|tsx))` bu kod `.js` ile eşleşen capture group'u ifade eder. Daha sonra `replace` metodunun ikinci argümanı `$1` olarak görüyoruz. `$2` ise ikinci capture group'ı içerecektir ve böyle devam edecektir.
