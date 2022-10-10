@@ -485,3 +485,46 @@ console.log(user1 === user2); // false
 ```
 
 Bu işlemin her zaman başarıya ulaştığını söyleyemeyiz. Eğer objenin yukarıda da belirttiğimiz gibi circular bağımlılıkları varsa işlem başarısız olur. 
+
+---
+
+## Object.assign
+
+![Object.assign](https://50tips.dev/tip-assets/12/art.jpg)
+
+Sık kullandığım bazı API'lar var. `Object.assign` bunlardan biri. Benim için genellikle kullanım durumu çeşitli property'ler ile birlikte yeni bir obje oluşturmaktır. İşte temel bilgiler: 
+
+```javascript
+const skills = { JavaScript: true, GraphQL: false };
+const user = { name: 'Krasimir' };
+
+const profile = Object.assign({}, user, skills);
+// { "name":"Krasimir", "JavaScript":true, "GraphQL":false }
+```
+
+Bu metodun yararlı olduğu bir kaç yön var. Örnek olarak bir field'a default değer atayıp ardından onu overwrite edebiliriz:
+
+```javascript
+const defaults = { JavaScript: false, GraphQL: false, name: 'unknown' };
+const skills = { JavaScript: true };
+
+const profile = Object.assign(defaults, skills);
+// { "JavaScript":true, "GraphQL":false, "name":"unknown" }
+```
+
+`assign` metodu falsy argümanları yok sayar, böylece bir field'ı yalnızca eğer tek satırlıysa ekleyebiliriz.
+
+```javascript
+function createUser(accessToken) {
+  const user = Object.assign(
+    { name: "Krasimir" },
+    accessToken && { accessToken }
+  );
+  return user;
+}
+
+createUser('xxx'); // { name:"Krasimir", accessToken:"xxx" }
+createUser(); // { name:"Krasimir" }
+```
+
+Bu API'yi genel olarak güvenlik data işlemleri için özellikle de data eksik veya tamamlanmış olduğunda kullanıyorum.
