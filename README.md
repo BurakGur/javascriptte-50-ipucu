@@ -552,3 +552,44 @@ console.log(renameFile("public/js/script.js", "prod"));
 ```
 
 `(\.(js|ts|jsx|tsx))` bu kod `.js` ile eşleşen capture group'u ifade eder. Daha sonra `replace` metodunun ikinci argümanı `$1` olarak görüyoruz. `$2` ise ikinci capture group'ı içerecektir ve böyle devam edecektir.
+
+---
+
+## Etiketli Template Literal
+
+![Tagged template literal](https://50tips.dev/tip-assets/14/art.jpg)
+
+Önceden JavaScript'te çok satırlı string ifadeler yazamıyorduk. Tek satırlı ifadeler birleştirmek zorunda kaldık. Daha sonra ise template literal tanıtıldı ve birdenbire hayatımız daha kolaylaştı.
+
+```javascript
+const what = "dummy text";
+const bigString = `
+  Lorem Ipsum is simply ${what} of the
+  printing and typesetting industry.
+`;
+```
+
+String manipülasyonlarını açısından, template literal büyük ihtimalle JavaScript'te son bir kaç yıldaki en iyi şeydir.
+
+Template literal'ler yardımcıdır fakat etiketli template literal'ler (`tagged template literals`) daha da iyidir.  String'i işleyecek bir fonksiyon tanımlamamıza izin vermektedir. Bu fonksiyon yer tutucudaki (`placeholder`) tüm metni ve ifadeleri kabul eder. Aşağıdaki örneği kontrol edin. Yer tutucuda, primitive (ilkel tip) yerine bir fonksiyon iletiyoruz. Bu fonksiyon bir `theme` objesiyle tetiklenir.
+
+```javascript
+const theme = {
+  brandColor1: "#BE2525",
+  brandColor2: "#BE0000",
+};
+function css(strings, ...values) {
+  return strings.reduce((res, str, i) => {
+    return res + str + (values[i] ? values[i](theme) : "");
+  }, "");
+}
+const styles = css`
+  font-size: 1.2em;
+  color: ${(theme) => theme.brandColor2};
+`;
+console.log(styles);
+// font-size: 1.2em;
+// color: #BE0000;
+```
+
+JavaScript topluluğu bu özelliği karmaşık ayrıştırma (`parse`) işlemlerinin gerekli olduğu yerde kullanır. Etiketli template kullanan bir çok kütüphane vardır. En popülerleri ise CSS-in-JS çözümleridir. CSS kodumuz JavaScript içerisinde tagged template literal olarak tutulur. Aynı yukarıdaki örnekte olduğu gibi. 
