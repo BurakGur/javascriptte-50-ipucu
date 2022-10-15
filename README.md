@@ -593,3 +593,48 @@ console.log(styles);
 ```
 
 JavaScript topluluğu bu özelliği karmaşık ayrıştırma (`parse`) işlemlerinin gerekli olduğu yerde kullanır. Etiketli template kullanan bir çok kütüphane vardır. En popülerleri ise CSS-in-JS çözümleridir. CSS kodumuz JavaScript içerisinde tagged template literal olarak tutulur. Aynı yukarıdaki örnekte olduğu gibi. 
+
+---
+
+## Media Query List
+
+![Media Query List](https://50tips.dev/tip-assets/15/art.jpg)
+
+Responsive tasarım ile ilgili ilk makaleyi 2010 yılında (Ethan Marcotte tarafından) gördüm. O zamandan beri Web gelişmeye ve geliştiriciler de web siteleri yapmaya devam etti. Bu günlerde ise responsive mimari bir opsiyon değil, zorunluluktur. 
+
+Responsive tasarım geliştirmek için birden fazla araç var. Büyük ihtimalle de en başındaki media query'lerdir. Bu, elementlerimizin altında farklı davranan veya/ve görünen bir tanımlama yapabildiğimiz CSS özelliğidir. Örnek olarak:
+
+```css
+body {
+  background-color: blue;
+}
+@media screen and (max-width: 800px) {
+  body {
+    background-color: red;
+  }
+}
+```
+
+`<body>` etiketinin varsayılan arkaplan rengi mavidir. Ancak eğer tarayıcının genişliği 800px'den düşük olursa bu sefer arkaplan rengi kırmızı olacaktır.
+
+Uzun bir zaman, bu özellik yalnızca CSS'te vardı. Bu durum artık devam etmiyor. Artık `MediaQueryList` API'a sahibiz:
+
+```javascript
+const mediaQueryList = window.matchMedia(
+  "(max-width: 800px)"
+);
+const handle = (mql) => {
+  if (mql.matches) {
+    console.log("width <= 800px");
+  } else {
+    console.log("width > 800px");
+  }
+};
+
+mediaQueryList.addEventListener("change", handle);
+handle(mediaQueryList);
+```
+
+Kendi kriterimize göre bir media query listesi objesi oluşturuyoruz. Ardından, kriterimiz karşılandığında bize söyleyecek bir dinleyici (`listener`) ekleyebiliriz.
+
+Bu API ile birlikte, tamamen responsive uygulamalar yapabiliriz. Sadece nasıl göründüğüne değil, nasıl çalıştığına da odaklanabiliriz.
