@@ -638,3 +638,42 @@ handle(mediaQueryList);
 Kendi kriterimize göre bir media query listesi objesi oluşturuyoruz. Ardından, kriterimiz karşılandığında bize söyleyecek bir dinleyici (`listener`) ekleyebiliriz.
 
 Bu API ile birlikte, tamamen responsive uygulamalar yapabiliriz. Sadece nasıl göründüğüne değil, nasıl çalıştığına da odaklanabiliriz.
+
+---
+
+## Event Delegation
+
+![Event Delegation](https://50tips.dev/tip-assets/16/art.jpg)
+
+Teknoloji geliştikçe bazı şeyleri nasıl unutmaya başladığımızı çok ilginç buluyorum. Unuttuğumuz şeylerden bir tanesi de event delegation. Günümüzde genellikle framework kullandığımız için event bubbling ve event capturing bir problem değil. Bu güvendiğimiz araçlar bu süreçleri kendimiz yönetmektedir. Frontend developer pozisyonları için yapılan mülakatlarda sorulan başlıca sorulardan biri olduğunu hatırlıyorum. Ve bu konuya bir bölüm ayırmayı karar verdim. 
+
+Aşağıdaki örneğe bakın:
+
+```html
+<div id="container">
+  <header>Hello</header>
+  <button id="button">call to action</button>
+</div>
+
+<script>
+document
+  .querySelector("#button")
+  .addEventListener("click", () => {
+  // ...
+});
+</script>
+```
+
+Sayfa yüklendiğinde, `<button>` elementine bir listener ekliyoruz. DOM'a değiştirmediğimiz sürece iyi çalışır. `container`'ın içeriğini değiştir değiştirmez, listener'ı  yeniden eklemeliyiz. Şu anda aptalca bir problem görülebilir fakat bir kaç sene önce büyük bir problemdi. 
+
+Eğer saf JavaScript yazıyorsak ve DOM elementlerini manipüle ediyorsak, listener'ların hazır bulunduğuna emin olmamız gerekir. Çözümlerden bir tanesi ise değişmeyen bir üst elemente listener eklemektir. Bizim senaryomuzda bu `<div id="container">`'dır. Ardından `event.target` ile event'in nereden geldiğini güvenli bir şekilde öğrenebiliriz. 
+
+```javascript
+document
+  .querySelector("#container")
+  .addEventListener('click', (event) => {
+  // event.target....
+});
+```
+
+Bu event delegation sayesinde çalışır. Eğer capture yoksa, her elementten gelen event bubble işlemi gerçekleştirir ve biz de onu yakalarız.
