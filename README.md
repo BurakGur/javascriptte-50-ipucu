@@ -677,3 +677,79 @@ document
 ```
 
 Bu event delegation sayesinde çalışır. Eğer capture yoksa, her elementten gelen event bubble işlemi gerçekleştirir ve biz de onu yakalarız.
+
+---
+
+## Error Handling
+
+![Error Handling](https://50tips.dev/tip-assets/17/art.jpg)
+
+Developer'ların sıklıkla unuttuğu bir şey var: error handling. Benim için düzgün error handling'in iki kuralı var. Birincisi error'u doğru yerde işlemek. Try-catch bloğu ve log yazdırma mantıklı değil. İkinci kural ise hatanın gerekli bilgiyi tutup hemen tepki vermesidir. 
+
+İlk kuralı göstermek için bir `button`'a tıklandığında fetch isteği tetikleyen bir yapımız olduğunu varsayalım.
+
+```jsx
+// somewhere in our services layer
+async function getAllProducts() {
+  try {
+    const res = await fetch('/api/products');
+    return res.json();
+  } catch(error) {
+    console.log('Ops! Something happen.');
+  }
+}
+// in a React Component
+<button onClick={async () => {
+  const data = await getAllProducts();
+  // render the data
+}}>
+  All products
+</button>
+```
+
+Çalışır ama kullanışlı değil. Eğer istek başarısız olursa ve hatayı yakalarsak, servisimizde çok bir şey yapmamız olacağız. Diğer bir yandan eğer try-catch bloğu React component'inin içerisinde olursa, kullanıcıya bir mesaj gösterebileceğiz.
+
+```jsx
+// somewhere in our services layer
+async function getAllProducts() {
+  const res = await fetch('/api/products');
+  return res.json();
+}
+// in a React Component
+<button onClick={async () => {
+  try {
+    const data = await getAllProducts();
+    // render the data
+  } catch(error) {
+    // render error message
+  }
+}}>
+  All products
+</button>
+```
+
+İkinci kuralı yerine getirmek için özelleştirilmiş hata tipi oluşturmayı seviyorum. Hatayı işlerken mesaja güvenmek yerine tipini kullanmak çok daha iyidir. Örnek olarak:
+
+```javascript
+class NoEmailError extends Error {
+  constructor() {
+    super("Missing email");
+    this.name = "NoEmailError";
+  }
+}
+function validatePayload(data) {
+  if (!data.email) throw new NoEmailError();
+  return true;
+}
+(function handler() {
+  try {
+    validatePayload({ name: "Jules" });
+  } catch (err) {
+    if (err instanceof NoEmailError) {
+      console.log(`Error: ${err.message}`);
+    }
+  }
+})();
+```
+
+Hatayı işleme, uygulamamızda işler yolunda gitmeğinde bile çalışmasını garanti eder. Geliştirme sürecinin bu bölümünü hafife almamak gerekir. Tekrardan, hatayı doğru yerde ve doğru bağlamda ele almalıyız. 
