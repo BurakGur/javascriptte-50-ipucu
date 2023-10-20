@@ -1,8 +1,17 @@
-# JavaScript'te 50 İpucu (50 Tips on JavaScript)
+# JavaScript'te 50 İpucu (50 Tips on JavaScript)
 
 [Krasimir Tsonev](https://github.com/krasimir)'in [50 Tips on JavaScript](https://50tips.dev) kitabının çevirisidir. Çeviriyi kendi yorumlarımla birlikte yaptım ve anlaşılır olması için kod örneklerine de kendi yorumlarımı ekledim. Herhangi bir hata veya geliştirme için lütfen PR açınız.
 
 Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze değişen yapılar, yeni API'lar gibi konularda bilgi vermektedir.
+
+![50 Tips on JavaScript](https://50tips.dev/img/cover.jpg)
+
+### İçerik Listesi
+
+| #    | İçerik İsmi                         |
+| :--- | ----------------------------------- |
+| 1    | [Strict Eşitliği](#strict-eşitliği) |
+
 
 ---
 
