@@ -1,33 +1,33 @@
-# JavaScript'te 50 İpucu (50 Tips on JavaScript)
+# JavaScript'te 50 İpucu (50 Tips on JavaScript)
 
-[Krasimir Tsonev](https://github.com/krasimir)'in [50 Tips on JavaScript](https://50tips.dev) kitabının çevirisidir. Çeviriyi kendi yorumlarımla birlikte yaptım ve anlaşılır olması için kod örneklerine de kendi yorumlarımı ekledim. Herhangi bir hata veya geliştirme için lütfen PR açınız.
+[Krasimir Tsonev](https://github.com/krasimir)'in [50 Tips on JavaScript](https://50tips.dev) kitabının çevirisidir. Çeviriyi kendi yorumlarımla birlikte yaptım ve anlaşılır olması için kod örneklerine de kendi yorumlarımı ekledim. Herhangi bir hata veya geliştirme için lütfen PR açınız. Ayrıca tüm kelimeleri Türkçe'ye çevirmedim. Daha anlaşılır ve teknik isimlendirmeleri genellikle aynı şekilde bıraktım.
 
 Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze değişen yapılar, yeni API'lar gibi konularda bilgi vermektedir.
 
 ![50 Tips on JavaScript](https://50tips.dev/img/cover.jpg)
 
-### İçindekiler
+### İçindekiler
 
 | #    | İçerik İsmi                                                  |
 | :--- | ------------------------------------------------------------ |
 | 1    | [Strict Eşitliği](#1-strict-eşitliği)                        |
-| 2    | [Virgül Operatörü (Comma Oparator)](#virgül-operatörü-comma-oparator) |
-| 3    | [Spread Operatörü (Spread Operator)](#spread-operatörü-spread-operator) |
-| 4    | [Destructuring](#destructuring)                              |
-| 5    | [Opsiyonel Zincirleme (Optional Chaining)](#opsiyonel-zincirleme-optional-chaining) |
-| 6    | [Referansa veya Değere Göre (By Reference or By Value)](#referansa-veya-değere-göre-by-reference-or-by-value) |
-| 7    | [Reducing](#reducing)                                        |
-| 8    | [Async/await](#asyncawait)                                   |
-| 9    | [Iterable Protocol](#iterable-protocol)                      |
-| 10   | [Generators](#generators)                                    |
-| 11   | [Priting JSON](#priting-json)                                |
-| 12   | [Object.assign](#objectassign)                               |
-| 13   | [Capture Groups](#capture-groups)                            |
-| 14   | [Etiketli Template Literal](#etiketli-template-literal)      |
-| 15   | [Media Query List](#media-query-list)                        |
-| 16   | [Event Delegation](#event-delegation)                        |
-| 17   | [Error Handling](#error-handling)                            |
-| 18   | [Eski Zamanlardan Bir Anı](#eski-zamanlardan-bir-anı)        |
+| 2    | [Virgül Operatörü (Comma Oparator)](#2-virgül-operatörü-comma-oparator) |
+| 3    | [Spread Operatörü (Spread Operator)](#3-spread-operatörü-spread-operator) |
+| 4    | [Destructuring](#4-destructuring)                            |
+| 5    | [Opsiyonel Zincirleme (Optional Chaining)](#5-opsiyonel-zincirleme-optional-chaining) |
+| 6    | [Referansa veya Değere Göre (By Reference or By Value)](#6-referansa-veya-değere-göre-by-reference-or-by-value) |
+| 7    | [Reducing](#7-reducing)                                      |
+| 8    | [Async/await](#8-asyncawait)                                 |
+| 9    | [Iterable Protocol](#9-iterable-protocol)                    |
+| 10   | [Generators](#10-generators)                                 |
+| 11   | [Priting JSON](#11-priting-json)                             |
+| 12   | [Object.assign](#12-objectassign)                            |
+| 13   | [Capture Groups](#13-capture-groups)                         |
+| 14   | [Etiketli Template Literal](#14-etiketli-template-literal)   |
+| 15   | [Media Query List](#15-media-query-list)                     |
+| 16   | [Event Delegation](#16-event-delegation)                     |
+| 17   | [Error Handling](#17-error-handling)                         |
+| 18   | [Eski Zamanlardan Bir Anı](#18-eski-zamanlardan-bir-anı)     |
 
 ------
 
