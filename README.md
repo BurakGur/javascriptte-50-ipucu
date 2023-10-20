@@ -753,3 +753,73 @@ function validatePayload(data) {
 ```
 
 Hatayı işleme, uygulamamızda işler yolunda gitmeğinde bile çalışmasını garanti eder. Geliştirme sürecinin bu bölümünü hafife almamak gerekir. Tekrardan, hatayı doğru yerde ve doğru bağlamda ele almalıyız. 
+
+## Eski Zamanlardan Bir Anı
+
+Bir zamanlar panoya kopyalama işlemi küçük bir Flash uygulaması ile yapılırdı. Günümüzde ise bunun için bir API bulunmaktadır:
+
+```javascript
+// Panoya yazı kopyalama
+async function copyToClipboard(text) {
+  return navigator.clipboard.writeText(text);
+}
+// Kopyalanan yazıyı getirme
+async function pasteFromClipboard() {
+  return navigator.clipboard.readText();
+}
+```
+
+Flash ile karşılaştığımız bir diğer sorun da yönlendirme (routing) işlemleriydi. Flash oynatıcısı yalnızca bir eklenti olduğu için adres çubuğuna doğrudan erişim sağlayamıyorduk. Kullanıcı uygulamamızda ilerlediğinde ve sayfaları değiştirdiğinde, o an bulunduğu yere veya sayfaya paylaşılabilir bir bağlantı vermenin hiçbir yolu yoktu. Ardından **"derin bağlantı"** (deep link) terimi icat edildi. Bu, tarayıcının URL'sini düzenleme işlemiydi ve böylece her sayfa için benzersiz adreslere sahip olurduk. Günümüzde artık Flash kullanmıyoruz ve **History API**'sine sahibiz:
+
+```javascript
+window.onpopstate = function(event) {
+  console.log(`State: ${JSON.stringify(event.state)}`) // Değişikliği dinleyip console'a yazdırıyoruz.
+}
+
+history.pushState({foo: "bar"}, "my title", "/foo/bar"); // URL'i değiştiriyoruz.
+history.back(); // Yaptığımız işlemi geri alıyoruz.
+```
+
+Ayrıca depolama API'larına da sahip değildik. Genellikle çerezleri kullanabiliyorduk. Günümüzde kullanıcının tarayıcısında veri depolamanın birkaç farklı yolu bulunmaktadır. En popüler olanlardan bir tanesi **local storage(yerel depolama)**'dır.
+
+```javascript
+localStorage.setItem("foo", "bar"); // Key-value şeklinde kaydediyoruz.
+// ...
+const value = localStorage.getItem("foo"); // Key değeriyle value'yu alabiliyoruz.
+console.log(value); // bar
+```
+
+Ayrıca, localStorage'a benzer olan ancak verileri yalnızca mevcut oturum için saklayan **sessionStorage** da bulunmaktadır. Kullanıcı sekmesini veya tarayıcıyı kapatırsa, verileri silinir. Buna karşılık localStorage, JavaScript veya kullanıcı tarafından manuel olarak silinene kadar verileri saklar.
+
+Daha fazla depolama alanına ihtiyaç duyduğumuz ise IndexedDB API'ı karşımıza çıkıyor. Bu, büyük miktarda veri saklamak için düşük seviyeli bir API'dir. IndexedDB, işlem tabanlı bir veritabanı sistemidir ve SQL'ye benzerdir. İşte hiç de kısa olmayan bir örnek:
+
+```javascript
+const indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+
+const request = indexedDB.open("UserProfiles", 1);
+
+request.onupgradeneeded = function() {
+  const db = request.result;
+  const store = db.createObjectStore("User", { keyPath: "id" });
+  const index = store.createIndex("NameIdx", ["name", "age"]);
+};
+
+request.onsuccess = function() {
+  const db = request.result;
+  const tx = db.transaction("User", "readwrite");
+  const store = tx.objectStore("User");
+  const index = store.index("NameIdx");
+  store.put({id: 1234, name: "Steve", age: 32});
+  store.put({id: 1235, name: "Peter", age: 34});
+  
+  const getUser = store.get(1234);
+  getUser.onsuccess = function() {
+    console.log(getUser.result.name);  // => "Steve"
+  };
+
+  tx.oncomplete = function() {
+    db.close();
+  };
+}
+```
+
