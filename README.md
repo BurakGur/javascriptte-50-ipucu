@@ -756,6 +756,8 @@ Hatayı işleme, uygulamamızda işler yolunda gitmeğinde bile çalışmasını
 
 ## Eski Zamanlardan Bir Anı
 
+![Blast From the Past](https://50tips.dev/tip-assets/18/art.jpg)
+
 Bir zamanlar panoya kopyalama işlemi küçük bir Flash uygulaması ile yapılırdı. Günümüzde ise bunun için bir API bulunmaktadır:
 
 ```javascript
