@@ -1,4 +1,4 @@
-# JavaScript'te 50 İpucu (50 Tips on JavaScript)
+# JavaScript'te 50 İpucu (50 Tips on JavaScript)
 
 [Krasimir Tsonev](https://github.com/krasimir)'in [50 Tips on JavaScript](https://50tips.dev) kitabının çevirisidir. Çeviriyi kendi yorumlarımla birlikte yaptım ve anlaşılır olması için kod örneklerine de kendi yorumlarımı ekledim. Herhangi bir hata veya geliştirme için lütfen PR açınız.
 
@@ -6,18 +6,34 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 
 ![50 Tips on JavaScript](https://50tips.dev/img/cover.jpg)
 
-### İçerik Listesi
+### İçindekiler
 
-| #    | İçerik İsmi                         |
-| :--- | ----------------------------------- |
-| 1    | [Strict Eşitliği](#strict-eşitliği) |
+| #    | İçerik İsmi                                                  |
+| :--- | ------------------------------------------------------------ |
+| 1    | [Strict Eşitliği](#1-strict-eşitliği)                        |
+| 2    | [Virgül Operatörü (Comma Oparator)](#virgül-operatörü-comma-oparator) |
+| 3    | [Spread Operatörü (Spread Operator)](#spread-operatörü-spread-operator) |
+| 4    | [Destructuring](#destructuring)                              |
+| 5    | [Opsiyonel Zincirleme (Optional Chaining)](#opsiyonel-zincirleme-optional-chaining) |
+| 6    | [Referansa veya Değere Göre (By Reference or By Value)](#referansa-veya-değere-göre-by-reference-or-by-value) |
+| 7    | [Reducing](#reducing)                                        |
+| 8    | [Async/await](#asyncawait)                                   |
+| 9    | [Iterable Protocol](#iterable-protocol)                      |
+| 10   | [Generators](#generators)                                    |
+| 11   | [Priting JSON](#priting-json)                                |
+| 12   | [Object.assign](#objectassign)                               |
+| 13   | [Capture Groups](#capture-groups)                            |
+| 14   | [Etiketli Template Literal](#etiketli-template-literal)      |
+| 15   | [Media Query List](#media-query-list)                        |
+| 16   | [Event Delegation](#event-delegation)                        |
+| 17   | [Error Handling](#error-handling)                            |
+| 18   | [Eski Zamanlardan Bir Anı](#eski-zamanlardan-bir-anı)        |
 
+------
 
----
+## 1. Strict Eşitliği
 
-## Strict Eşitliği
-
-Uzun zamandır JavaScript yazıyorum ve öğrendiği başlıca şeylerden bir tane `==` (iki eşitlik) yerine `===` (üçlü eşitlik) kullanmaktır. Bu daha güvenli bir yöntemdir. Örneğin:
+Uzun zamandır JavaScript yazıyorum ve öğrendiğim başlıca şeylerden birisi `==` (iki eşitlik) yerine `===` (üçlü eşitlik) kullanmaktır. Bu daha güvenli bir yöntemdir. Örneğin:
 
 ```javascript
 [user.id](http://user.id) === user.id
@@ -29,13 +45,13 @@ yerine
 [user.id](http://user.id) == id
 ```
 
-Kullandığımızda bir çok hatanın da kaynağı haline gelmektedir. Genellikle mantıksız görünen ifadelere denk geliyoruz. Örnek olarak boş bir string ile false boolen değerini karşılaştıralım:
+kullandığımızda bir çok hataya da davet çıkarmış oluruz. Bunun sebebi genellikle mantıksız görünen ifadelere denk gelmemizdir. Örnek olarak boş bir string ile false olan bir boolean değerini karşılaştıralım:
 
 ```javascript
 console.log("" == false); // true
 ```
 
-Bu karşılaştırma `true`’dur çünkü == (çiftli eşitlik) kullandığımızda gevşek bir eşitlik kullanırız. Sonuç `true`’dur çünkü her iki değer de ortak bir type’a dönüştürülür ve öyle karşılaştırılır. Bu karşılaştırma daha çok şu eşitliğe benzer:
+Bu karşılaştırma `true`’dur çünkü == (çiftli eşitlik) kullandığımızda basit bir eşitlik kullanırız. Sonuç `true`’dur çünkü her iki değer de ortak bir type’a dönüştürülür ve öyle karşılaştırılır. Bu karşılaştırma daha çok şu eşitliğe benzer:
 
 ```javascript
 console.log(Boolean("") === false); // true
@@ -47,7 +63,7 @@ Yani üçlü eşitlik kodunuzu daha anlaşılır hale getirir ve sizi bazı gari
 
 ---
 
-## Virgül Operatörü (Comma Oparator)
+## 2. Virgül Operatörü (Comma Oparator)
 
 Virgül operatörünün JavaScript'te hafife alındığını düşünüyorum. Popüler bakış açısı virgülü fonksiyondaki parametreleri ve array içindeki elemanları ayırmamız için kullanıldığımız yönünde. Ancak başka bir kullanımı daha var.
 
@@ -77,7 +93,8 @@ console.log(result); // b
 
 ---
 
-## Spread Operatörü (Spread Operator)
+## 3. Spread Operatörü (Spread Operator)
+
 ![Spread Operator](https://50tips.dev/tip-assets/3/art.jpg)
 Geçtiğimiz günlerde JavaScript'e gelen yeni özellikleri okumaya başladığımda beni en çok heyecanlandıran şey spread operatörü olmuştu. Çeşitli yerlerde genişletilebilir iterable (veya stringler) oluşturmamıza izin verir. Genellikle bu operatörü object oluştururken kullanırım. Örneğin: 
 
@@ -137,7 +154,7 @@ console.log(values); // [10, 33, 42, 2, 9]
 
 ---
 
-## Destructuring
+## 4. Destructuring
 
 ![Destructing](https://50tips.dev/tip-assets/4/art.jpg)
 
@@ -171,7 +188,7 @@ console.log(`${who}, position: ${position}`); // Krasimir, pos
 
 ---
 
-## Opsiyonel Zincirleme (Optional Chaining)
+## 5. Opsiyonel Zincirleme (Optional Chaining)
 
 ![Optional Chaining](https://50tips.dev/tip-assets/5/art.jpg)
 
@@ -192,7 +209,7 @@ console.log(user?.skills?.[0]); // undefined
 
 ---
 
-## Referansa veya Değere Göre (By Reference or By Value)
+## 6. Referansa veya Değere Göre (By Reference or By Value)
 
 ![By Reference or By Value](https://50tips.dev/tip-assets/6/art.jpg)
 
@@ -241,7 +258,7 @@ Bazı programlama dillerinde ise `obj = { score: 120 }` tanımlamasının `user`
 
 ---
 
-## Reducing 
+## 7. Reducing 
 
 ![Reducing](https://50tips.dev/tip-assets/7/art.jpg)
 
@@ -285,7 +302,7 @@ console.log(totalYears); // 22
 
 ---
 
-## Async/await
+## 8. Async/await
 
 ![Async/await](https://50tips.dev/tip-assets/8/art.jpg)
 
@@ -349,7 +366,7 @@ getContent();
 
 ---
 
-## Iterable Protocol 
+## 9. Iterable Protocol 
 
 ![Iterable Protokol](https://50tips.dev/tip-assets/9/art.jpg)
 
@@ -405,7 +422,7 @@ Tanım olarak, tüm iterable object'lerini destory edebiliriz. Eğer object'leri
 
 ---
 
-## Generators
+## 10. Generators
 
 ![Generators](https://50tips.dev/tip-assets/10/art.jpg)
 
@@ -468,7 +485,7 @@ Generator fonksiyonumuz `robot` , komutları gönderiyor ve asenkron olarak sonu
 
 ---
 
-## Priting JSON
+## 11. Priting JSON
 
 ![Printings JSON](https://50tips.dev/tip-assets/11/art.jpg)
 
@@ -505,7 +522,7 @@ Bu işlemin her zaman başarıya ulaştığını söyleyemeyiz. Eğer objenin yu
 
 ---
 
-## Object.assign
+## 12. Object.assign
 
 ![Object.assign](https://50tips.dev/tip-assets/12/art.jpg)
 
@@ -548,7 +565,7 @@ Bu API'yi genel olarak güvenlik data işlemleri için özellikle de data eksik 
 
 ---
 
-## Capture Groups
+## 13. Capture Groups
 
 ![Capture Groups](https://50tips.dev/tip-assets/13/art.jpg)
 
@@ -572,7 +589,7 @@ console.log(renameFile("public/js/script.js", "prod"));
 
 ---
 
-## Etiketli Template Literal
+## 14. Etiketli Template Literal
 
 ![Tagged template literal](https://50tips.dev/tip-assets/14/art.jpg)
 
@@ -613,7 +630,7 @@ JavaScript topluluğu bu özelliği karmaşık ayrıştırma (`parse`) işlemler
 
 ---
 
-## Media Query List
+## 15. Media Query List
 
 ![Media Query List](https://50tips.dev/tip-assets/15/art.jpg)
 
@@ -658,7 +675,7 @@ Bu API ile birlikte, tamamen responsive uygulamalar yapabiliriz. Sadece nasıl g
 
 ---
 
-## Event Delegation
+## 16. Event Delegation
 
 ![Event Delegation](https://50tips.dev/tip-assets/16/art.jpg)
 
@@ -697,7 +714,7 @@ Bu event delegation sayesinde çalışır. Eğer capture yoksa, her elementten g
 
 ---
 
-## Error Handling
+## 17. Error Handling
 
 ![Error Handling](https://50tips.dev/tip-assets/17/art.jpg)
 
@@ -771,7 +788,7 @@ function validatePayload(data) {
 
 Hatayı işleme, uygulamamızda işler yolunda gitmeğinde bile çalışmasını garanti eder. Geliştirme sürecinin bu bölümünü hafife almamak gerekir. Tekrardan, hatayı doğru yerde ve doğru bağlamda ele almalıyız. 
 
-## Eski Zamanlardan Bir Anı
+## 18. Eski Zamanlardan Bir Anı
 
 ![Blast From the Past](https://50tips.dev/tip-assets/18/art.jpg)
 
@@ -841,4 +858,3 @@ request.onsuccess = function() {
   };
 }
 ```
-
