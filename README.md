@@ -96,7 +96,7 @@ console.log(result); // b
 ## 3. Spread Operatörü (Spread Operator)
 
 ![Spread Operator](https://50tips.dev/tip-assets/3/art.jpg)
-Geçtiğimiz günlerde JavaScript'e gelen yeni özellikleri okumaya başladığımda beni en çok heyecanlandıran şey spread operatörü olmuştu. Çeşitli yerlerde genişletilebilir iterable (veya stringler) oluşturmamıza izin verir. Genellikle bu operatörü object oluştururken kullanırım. Örneğin: 
+Geçtiğimiz günlerde JavaScript'e gelen yeni özellikleri okumaya başladığımda beni en çok heyecanlandıran şey spread operatörü olmuştu. Çeşitli yerlerde genişletilebilir iterable (veya stringler) oluşturmamıza izin vermektedir. Genellikle bu operatörü object oluştururken kullanırım. Örneğin: 
 
 ```javascript
 const name = {
@@ -262,7 +262,7 @@ Bazı programlama dillerinde ise `obj = { score: 120 }` tanımlamasının `user`
 
 ![Reducing](https://50tips.dev/tip-assets/7/art.jpg)
 
-Genellike object'leri bir şekilde diğer şekle dönüştürmemiz gerekir. Bu tarz dönüşümler için benim favori aracım reduce fonksiyonlarıdır. Aşağıdaki gibi içerisinde object'leri içeren bir array'imizin olduğunu varsayalım:
+Genellike object'leri bir şekilden diğer bir şekle dönüştürmemiz gerekir. Bu tarz dönüşümler için benim favori aracım reduce fonksiyonlarıdır. Aşağıdaki gibi içerisinde object'leri içeren bir array'imizin olduğunu varsayalım:
 
 ```javascript
 const positions = [
@@ -306,16 +306,16 @@ console.log(totalYears); // 22
 
 ![Async/await](https://50tips.dev/tip-assets/8/art.jpg)
 
-JavaScript'te eşzamansızlık konusunu çok geniş bir alan. Çünkü JavaScript dili asenkron işlemleri çözmek için bir çok mekanizma sunmaktadır. Yıllar geçtikçe bu mekanizmalar da değişiyor.  Tarihsel olarak, native APIs bu sorunu çözmek için tanıtılan ilk  yöntemdi. Bu yöntemde fonksiyon belirsiz bir gelecekte çağırılan `callback` isimli bir fonksiyonu kabul eder.
+JavaScript'te eşzamansızlık (asenkron) konusunu çok geniş bir alan. Çünkü JavaScript dili asenkron işlemleri çözmek için bir çok mekanizma sunmaktadır. Yıllar geçtikçe bu mekanizmalar da değişiyor.  Tarihsel olarak, native API'lar bu sorunu çözmek için tanıtılan ilk  yöntemdi. Bu yöntemde fonksiyon belirsiz bir gelecekte çağırılan `callback` isimli bir fonksiyonu kabul eder.
 
 ```javascript
 const fs = require('fs');
 
 fs.readFile('./content.md', function callback(error, result) {
   if (error) {
-    // in case of error
+    // eğer hata varsa
   } else {
-    // use the data
+    // datayı kullan
   }
 })
 ```
@@ -326,13 +326,13 @@ fs.readFile('./content.md', function callback(error, result) {
 functionA(param, function (err, result) {
   functionB(param, function (err, result) {
     functionC(param, function (err, result) {
-      // And so on...
+      // böyle devam eder
     });
   });
 });
 ```
 
-`callback hell` 'i düzeltmesi gereken API ise `promise` olacaktı. `promise` gelecekteki işlemlerimizi üstlenecek bir object'tir. Tabi başarılı veya başarısız da olabilir. Bu object'ler üç durumu vardır: `resolved (çözüldü) `,  `rejected(reddedildi)` ve `pending(bekleniyor) `'dur. 
+`callback hell` 'i düzeltmesi gereken API ise `promise` olacaktır. `promise` gelecekteki işlemlerimizi üstlenecek bir object'tir. Tabi başarılı veya başarısız da olabilir. Bu object'ler üç durumu vardır: `resolved (çözüldü) `,  `rejected(reddedildi)` ve `pending(bekleniyor) `'dur. 
 
 İşte promise'leri kullanarak dönüştürülmüş aynı örnek: 
 
@@ -345,7 +345,7 @@ readFile('./content.md')
 
 Promise'lerin callback'ler gibi problemleri yoktu fakat mükemmel de değildir. İç içe veya birbirine bağlı promise'ler yazdığımızda yeniden karışık kod blocklarıyla karşılaşabiliriz.
 
-Günümüzde ise herkes neredeyse başka bir API'yi kullanıyor: `async/await` . Bu API, bize fonksiyonun önüne eklenen `async` kelimesiyle asenkron fonksiyon tanımlamıza izin veriyor. Ardından fonksiyonun içerisinde promise işlemlerin öncesinde `await` kelimesini ekleyebiliriz. Bu fonksiyonu promise işlemi çözülene (resolved) kadar duraklatacaktır. İşte aynı örneğin `async/await` kullanılarak yeniden yazılmış hali: 
+Günümüzde ise herkes tamamiyle başka bir API'yi kullanıyor: `async/await` . Bu API, bize fonksiyonun önüne eklenen `async` kelimesiyle asenkron fonksiyon tanımlamıza izin veriyor. Ardından fonksiyonun içerisinde promise işlemlerin öncesinde `await` kelimesini ekleyebiliriz. Bu fonksiyonu promise işlemi çözülene (resolved) kadar duraklatacaktır. İşte aynı örneğin `async/await` kullanılarak yeniden yazılmış hali: 
 
 ```javascript
 import { readFile } from 'fs/promises';
@@ -353,9 +353,9 @@ import { readFile } from 'fs/promises';
 async function getContent() {
   try {
     const data = await readFile('./content.md');
-    // use the data
+    // datayı kullan
   } catch(err) {
-    // in case of error
+    // hata var
   }
 }
 
@@ -364,13 +364,23 @@ getContent();
 
 Önemli bir gerçek de her `async` kullanılan tüm fonksiyonların promise ile sonuçlanmasıdır. Örnek olarak aşağıdaki `getResult` fonksiyonu 10 döndürmez, onun yerine 10 değeriyle çözülen (resolved) bir promise döndürür.
 
+```javascript
+async function getResult() {
+  return 10;
+}
+console.log(getResult());
+// Promise<fulfilled: 10>
+```
+
+
+
 ---
 
 ## 9. Iterable Protocol 
 
 ![Iterable Protokol](https://50tips.dev/tip-assets/9/art.jpg)
 
-Iterable protokol hafife alınıyor. İnsanların kullanmadığını görüyorum ve bu beni çok üzüyor. Çünkü aslında muhteşem bir araç. Spesifik object'lerde nasıl döngü yapacağımızı belirler. Başka bir deyişle özelleştirilmiş iterating davranışı oluşturmamıza imkan verir. `@@iterator` (`Sysbol.iterator`'un kısa yazılışı) isimli bir property oluşturmamız gerekiyor. Bu property `iterable protocol` ile eşleşen bir object dönen ve herhangi bir argüman almayan fonksiyona eşit olması gerekiyor. İşte örnek:
+Iterable protokol hafife alınıyor. İnsanların kullanmadığını görüyorum ve bu beni çok üzüyor. Çünkü aslında muhteşem bir araç. Spesifik object'lerde nasıl döngü yapacağımızı belirler. Başka bir deyişle özelleştirilmiş iterating davranışı oluşturmamıza imkan verir. `@@iterator` (`Sysbol.iterator`'un kısa yazılışı) isimli bir property oluşturmamız gerekiyor. Bu property `iterable protocol` ile eşleşen, bir object dönen ve herhangi bir argüman almayan fonksiyona eşit olması gerekiyor. İşte örnek:
 
 ```javascript
 const user = {
@@ -428,7 +438,7 @@ Tanım olarak, tüm iterable object'lerini destory edebiliriz. Eğer object'leri
 
 Aynı `iterable protocol` gibi, JavaScript'te `generator` kullanmak da popüler değil. Topluluk bu API üzerinde çok fazla çalışmıyor. Fakat bence  potansiyeli var. Özellikle de asenksron süreçleri çözmede. 
 
-Generator fonksiyonlar çağrıldığında iterable generator döndüren özel tipli bir fonksiyondur. Bu fonksiyonun içindeki kodun hemen yürütülmediği anlamına gelir. Generator'de `next` metodunu çağırmamız gerekiyor. Ardından yürütme işlemi `yield` ifadesine kadar devam eder. Aşağıdaki kod örneği bu yapıyı gösteriyor:
+Generator fonksiyonlar çağrıldığında iterable generator döndüren özel tipli bir fonksiyondur. Bu, fonksiyonun içindeki kodun hemen yürütülmediği anlamına gelir. Generator'da `next` metodunu çağırmamız gerekiyor. Ardından yürütme işlemi `yield` ifadesine kadar devam eder. Aşağıdaki kod örneği bu yapıyı gösteriyor:
 
 ```javascript
 function* calculate() {
@@ -477,11 +487,11 @@ async function commander(gen, passBack) {
 ```
 
 ```javascript
-// after a second or two we'll get:
+// Bir iki saniye sonra şu sonucu alacağız:
 // <img src="https://cdn2.thecatapi.com/images/<random id here>.jpg" />
 ```
 
-Generator fonksiyonumuz `robot` , komutları gönderiyor ve asenkron olarak sonuçları alıyor. `get-cat` [thecatapi.com](thecatapi.com) adresine HTTP isteği gönderen ve rastgele resim URL'i döndüren bir komuttur. `format` başka bir komuttur ve resim etiketi döndürür. Ayrıca generator'ler, async/await'e benzer şekilde fonksiyonumuzun eşzamanlı (synchronous) görünmesini sağlar. 
+Generator fonksiyonumuz `robot` , komutları gönderiyor ve asenkron olarak sonuçları alıyor. `get-cat` [thecatapi.com](thecatapi.com) adresine HTTP isteği gönderen ve rastgele resim URL'i döndüren bir komuttur. `format` başka bir komuttur ve resim etiketi döndürür. Ayrıca generator'ler, async/await'e benzer şekilde fonksiyonumuzun eşzamanlı (synchronous) olarak görünmesini sağlar. 
 
 ---
 
