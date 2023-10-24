@@ -28,7 +28,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 16   | [Event Delegation](#16-event-delegation)                     |
 | 17   | [Error Handling](#17-error-handling)                         |
 | 18   | [Eski Zamanlardan Bir Anı](#18-eski-zamanlardan-bir-anı)     |
-| 19   | [Asenkron Derhal Çağrılan Fonksiyon İfadesi](#19-asenkron-derhal-çağrılan-fonksiyon-ifadesi) |
+| 19   | [Asenkron Derhal Çağrılan Fonksiyon İfadesi](#19-asenkron-derhal-çağrılan-fonksiyon-i̇fadesi) |
 
 ------
 
