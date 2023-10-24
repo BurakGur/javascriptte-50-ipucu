@@ -28,6 +28,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 16   | [Event Delegation](#16-event-delegation)                     |
 | 17   | [Error Handling](#17-error-handling)                         |
 | 18   | [Eski Zamanlardan Bir Anı](#18-eski-zamanlardan-bir-anı)     |
+| 19   | [Asenkron Derhal Çağrılan Fonksiyon İfadesi](#19-asenkron-derhal-çağrılan-fonksiyon-ifadesi) |
 
 ------
 
@@ -798,6 +799,8 @@ function validatePayload(data) {
 
 Hatayı işleme, uygulamamızda işler yolunda gitmeğinde bile çalışmasını garanti eder. Geliştirme sürecinin bu bölümünü hafife almamak gerekir. Tekrardan, hatayı doğru yerde ve doğru bağlamda ele almalıyız. 
 
+---
+
 ## 18. Eski Zamanlardan Bir Anı
 
 ![Blast From the Past](https://50tips.dev/tip-assets/18/art.jpg)
@@ -868,3 +871,32 @@ request.onsuccess = function() {
   };
 }
 ```
+
+---
+
+### 19. Asenkron Derhal Çağrılan Fonksiyon İfadesi
+
+![Asynchronous Immediately Invoked Function Expression](https://50tips.dev/tip-assets/19/art.jpg)
+
+Bu kitabın başında, async/await sözdizini üzerine değinmiştik. Bu API'ın JavaScript diline geldiği zamanı hatırlıyorum. Kodumuz biraz daha okunaklı ve yönetilebilir hale geldi. Ancak bir istisna var - global kapsamda await kullanamayız. Bu tür durumlarda, kendiliğinden çağrılan bir async fonksiyon kullanmamız gerekmektedir.
+
+```javascript
+const url = "https://api.thecatapi.com/v1/images/search";
+(async function getData() {
+  const res = await fetch(url);
+  const data = await res.json();
+  console.log(data[0].url); // cat image url
+})();
+```
+
+Bu desen aynı zamanda IIFE (Immediately Invoked Function Expression - Hemen Çağrılan İşlev İfadesi) olarak da bilinir. Bu desen, çalıştırılacak kodu kendi özel kapsamına almak istediğimiz durumlar için faydalıdır. Yukarıdaki örnekte, res ve data sabitleri sadece getData işlevi içinde erişilebilirdir.
+
+*(Kullandığınız JavaScript motoru üst düzey await'i destekliyor olabilir. Bu nedenle kendiliğinden çağrılan bir fonksiyona ihtiyaç duymayabilirsiniz.)*
+
+
+
+
+
+
+
+
