@@ -29,6 +29,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 17   | [Error Handling](#17-error-handling)                         |
 | 18   | [Eski Zamanlardan Bir Anı](#18-eski-zamanlardan-bir-anı)     |
 | 19   | [Asenkron Derhal Çağrılan Fonksiyon İfadesi](#19-asenkron-derhal-çağrılan-fonksiyon-i̇fadesi) |
+| 20   | [Asenkron Kuyruk](#20-asenkron-kuyruk) |
 
 ------
 
@@ -892,6 +893,73 @@ const url = "https://api.thecatapi.com/v1/images/search";
 Bu desen aynı zamanda IIFE (Immediately Invoked Function Expression - Hemen Çağrılan İşlev İfadesi) olarak da bilinir. Bu desen, çalıştırılacak kodu kendi özel kapsamına almak istediğimiz durumlar için faydalıdır. Yukarıdaki örnekte, res ve data sabitleri sadece getData işlevi içinde erişilebilirdir.
 
 *(Kullandığınız JavaScript motoru üst düzey await'i destekliyor olabilir. Bu nedenle kendiliğinden çağrılan bir fonksiyona ihtiyaç duymayabilirsiniz.)*
+
+---
+
+### 20. Asenkron Kuyruk
+
+![Asynchronous queue](https://50tips.dev/tip-assets/20/art.jpg)
+
+Bazen kütüphanelerin zaten çözdüğü sorunları çözmeyi severim. Bu sorunlardan biri, ardışık olarak birden fazla asenkron (eşzamanlı) işlemi ele almak. Diğer bir deyişle, rastgele süreleri olan istekleri kabul edip, tüm sonuçları döndüren bir API'ye sahip olmaktır. Örneğin:
+
+```javascript
+const queue = createQueue();
+
+function nationality(name) {
+  return () => fetch(`https://api.nationalize.io/?name=${name}`)
+      .then((res) => res.json())
+      .then((data) => `${name}: ${data.country[0].country_id}`);
+}
+
+queue.add(nationality("Krasimir"));
+queue.add(nationality("Natalie"));
+setTimeout(() => {
+  queue.add(nationality("Hans"));
+}, 10);
+queue.done.then(console.log);
+
+queue.execute();
+// Bir süre sonra: [ 'Krasimir: BG', 'Natalie: GB', 'Hans: FO' ]
+```
+
+`nationality` isimli bir fonksiyon, bir isim alır ve bu ismin kaynağını sorgulamak için `api.nationalize.io`'ya başvurur. Bu, bir promise döndürür. Tüm promise'leri bir kuyruğa ekliyoruz. Tüm promise'ler yerine getirildiğinde sonucu alacağız.
+
+İşte bu asenkron kuyruk için benim entegrasyonum:
+
+```javascript
+function createQueue() {
+  let tasks = [], results = [], processing = false, done = () => {};
+  const handle = (res) => {
+    results.push(res);
+    processing = false;
+    execute();
+  };
+  function execute() {
+    if (tasks.length > 0 && !processing) {
+      processing = true;
+      tasks.shift()().then(handle).catch(handle);
+    } else if (tasks.length === 0 && !processing) {
+      done(results);
+    }
+  }
+  function add(task) { tasks.push(task); }
+  return {
+    add,
+    execute,
+    done: new Promise((cb) => (done = cb))
+  }
+}
+```
+
+Bu fonksiyon, görev listesini tanımlar ve bu görevlerin ne zaman tamamlandığını izler. Bir işlem bittiğinde, bekleyen promise'lerin olup olmadığını kontrol ederiz. Yoksa, işin tamamlandığını kabul ederiz. Şu anda birbirini bekledikleri için istekleri paralel olarak çalıştırmak daha iyi bir geliştirme olabilir.
+
+
+
+
+
+
+
+
 
 
 
