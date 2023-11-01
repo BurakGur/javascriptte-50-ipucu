@@ -960,9 +960,9 @@ Bu fonksiyon, görev listesini tanımlar ve bu görevlerin ne zaman tamamlandı�
 
 ![JavaScript module system as a singleton](https://50tips.dev/tip-assets/21/art.jpg)
 
-JavaScript'te farklı kapsam (scope) türleri bulunmaktadır. Bunlardan biri modül kapsamıdır. Bir dosyanın en üstündeki bir değişken bu kapsama dahil olur. Node'da böyle bir değişken; fonksiyon, sınıf veya blok kapsamının bir parçası değildir. Bu anlamda, kodumuzu paketlediğimizde client tarafında yeniden oluşturulur. Bu değişkenlere dosya/modül dışından erişilemez. Onları dışa aktarmamız (export) gerekir. Bir diğer özellikleri ise önbelleğe (cache) alınmış olmalarıdır. Yani modülü ne kadar çok import/requeire işlemi yaparsak yapalım, en üst düzey kod yalnızca bir kez çalıştırılır. Bu, singleton desenini uygulamamıza olanak tanır (kitabın ilerleyen bölümlerinde bu konuyu daha derinlemesine ele alacağız).
+JavaScript'te farklı kapsam (scope) türleri bulunmaktadır. Bunlardan biri modül kapsamıdır. Bir dosyanın en üstündeki bir değişken bu kapsama dahil olur. Node'da böyle bir değişken; fonksiyon, sınıf veya blok kapsamının bir parçası değildir. Bu anlamda, kodumuzu paketlediğimizde client tarafında yeniden oluşturulur. Bu değişkenlere dosya/modül dışından erişilemez. Onları dışa aktarmamız (export) gerekir. Bir diğer özellikleri ise önbelleğe (cache) alınmış olmalarıdır. Yani modülü ne kadar çok import/require işlemi yaparsak yapalım, en üst düzey kod yalnızca bir kez çalıştırılır. Bu, singleton desenini uygulamamıza olanak tanır (kitabın ilerleyen bölümlerinde bu konuyu daha derinlemesine ele alacağız).
 
-Diyelim ki aşağıdaki içeriğe sahip `registry.js adlı bir dosyamız var.
+Diyelim ki aşağıdaki içeriğe sahip `registry.js` adlı bir dosyamız var.
 
 ```javascript
 const users = [];
@@ -990,7 +990,7 @@ R.register("Alex");
 module.exports = R;
 ```
 
-Her iki dosyadaki `R sabiti aynı nesnedir. İşte kanıtı: Üçç dosyayı da içe aktaracak şekilde `index.js` oluşturacağız. Bu, `registry.js` modülünden total fonksiyonunu çağıracak.
+Her iki dosyadaki `R` sabiti aynı nesnedir. İşte kanıtı: Üçç dosyayı da içe aktaracak şekilde `index.js` oluşturacağız. Bu, `registry.js` modülünden `total` fonksiyonunu çağıracak.
 
 ```javascript
 const A = require("./A");
@@ -1002,39 +1002,3 @@ console.log(A === B); // true
 ```
 
 İlk log, `users` dizisini yalnızca bir kez oluşturduğumuzu ve `register` fonksiyonunu çağırdığımızda aynı örneği kullandığımızı kanıtlar. İkinci log, `registery` içindeki dışa aktarılan (export) edilen değerin önbelleğe alındığını gösterir.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
