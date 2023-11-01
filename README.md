@@ -30,6 +30,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 18   | [Eski Zamanlardan Bir Anı](#18-eski-zamanlardan-bir-anı)     |
 | 19   | [Asenkron Derhal Çağrılan Fonksiyon İfadesi](#19-asenkron-derhal-çağrılan-fonksiyon-i̇fadesi) |
 | 20   | [Asenkron Kuyruk](#20-asenkron-kuyruk) |
+| 21   | [JavaScript Modül Sistemi Olarak Bir Singleton](#21-javascript-modül-sistemi-olarak-bir-singleton) |
 
 ------
 
@@ -952,6 +953,75 @@ function createQueue() {
 ```
 
 Bu fonksiyon, görev listesini tanımlar ve bu görevlerin ne zaman tamamlandığını izler. Bir işlem bittiğinde, bekleyen promise'lerin olup olmadığını kontrol ederiz. Yoksa, işin tamamlandığını kabul ederiz. Şu anda birbirini bekledikleri için istekleri paralel olarak çalıştırmak daha iyi bir geliştirme olabilir.
+
+---
+
+### 21. JavaScript Modül Sistemi Olarak Bir Singleton
+
+![JavaScript module system as a singleton](https://50tips.dev/tip-assets/21/art.jpg)
+
+JavaScript'te farklı kapsam (scope) türleri bulunmaktadır. Bunlardan biri modül kapsamıdır. Bir dosyanın en üstündeki bir değişken bu kapsama dahil olur. Node'da böyle bir değişken; fonksiyon, sınıf veya blok kapsamının bir parçası değildir. Bu anlamda, kodumuzu paketlediğimizde client tarafında yeniden oluşturulur. Bu değişkenlere dosya/modül dışından erişilemez. Onları dışa aktarmamız (export) gerekir. Bir diğer özellikleri ise önbelleğe (cache) alınmış olmalarıdır. Yani modülü ne kadar çok import/requeire işlemi yaparsak yapalım, en üst düzey kod yalnızca bir kez çalıştırılır. Bu, singleton desenini uygulamamıza olanak tanır (kitabın ilerleyen bölümlerinde bu konuyu daha derinlemesine ele alacağız).
+
+Diyelim ki aşağıdaki içeriğe sahip `registry.js adlı bir dosyamız var.
+
+```javascript
+const users = [];
+module.exports = {
+  register(name) {
+    users.push({ name });
+  },
+  total() {
+    return users.length;
+  },
+};
+```
+
+Kullanıcıları en üst düzeyde tanımladık, bu nedenle önbelleğe alındı. Sadece bir kez başlatılacak. Şimdi `A.js` ve `B.js` adlı iki başka dosya/modül oluşturalım ve bunlar `registry.js` dosyasını içe aktarsın.
+
+```javascript
+// A.js
+const R = require("./registry");
+R.register("Dave");
+module.exports = R;
+
+// B.js
+const R = require("./registry");
+R.register("Alex");
+module.exports = R;
+```
+
+Her iki dosyadaki `R sabiti aynı nesnedir. İşte kanıtı: Üçç dosyayı da içe aktaracak şekilde `index.js` oluşturacağız. Bu, `registry.js` modülünden total fonksiyonunu çağıracak.
+
+```javascript
+const A = require("./A");
+const B = require("./B");
+const { total } = require("./registry");
+
+console.log(total()); // 2
+console.log(A === B); // true
+```
+
+İlk log, `users` dizisini yalnızca bir kez oluşturduğumuzu ve `register` fonksiyonunu çağırdığımızda aynı örneği kullandığımızı kanıtlar. İkinci log, `registery` içindeki dışa aktarılan (export) edilen değerin önbelleğe alındığını gösterir.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
