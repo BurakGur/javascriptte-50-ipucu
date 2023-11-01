@@ -31,6 +31,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 19   | [Asenkron Derhal Çağrılan Fonksiyon İfadesi](#19-asenkron-derhal-çağrılan-fonksiyon-i̇fadesi) |
 | 20   | [Asenkron Kuyruk](#20-asenkron-kuyruk) |
 | 21   | [JavaScript Modül Sistemi Olarak Bir Singleton](#21-javascript-modül-sistemi-olarak-bir-singleton) |
+| 22   | [Call-to-action Eklentilerini Script Etiketiyle Değiştirme](#22-call-to-action-eklentilerini-script-etiketiyle-değiştirme) |
 
 ------
 
@@ -1002,3 +1003,49 @@ console.log(A === B); // true
 ```
 
 İlk log, `users` dizisini yalnızca bir kez oluşturduğumuzu ve `register` fonksiyonunu çağırdığımızda aynı örneği kullandığımızı kanıtlar. İkinci log, `registery` içindeki dışa aktarılan (export) edilen değerin önbelleğe alındığını gösterir.
+
+---
+
+### 22. Call-to-action Eklentilerini Script Etiketiyle Değiştirme
+
+![Call-to-action widgets script tag replacement](https://50tips.dev/tip-assets/22/art.jpg)
+
+Hiç call-to-action eklentilerinin nasıl çalıştığını merak ettiniz mi? Bilirsiniz, bu küçük butonlar sosyal ağlarda içeriği paylaşmak içindir. Genellikle `iframe` olarak entegre edilirler, ancak bazen script etiketini kopyala/yapıştır yapmamız gerekir. Ve dökümanda şöyle der: "Butonu nerede görmek istiyorsanız aşağıdaki kodu yerleştirin.". Ancak eğer bu bir script etiketi ise, butonu nereye yerleştireceğini nasıl bilir? Bu bölümün amacı, bu sorunun cevabını size vermek.
+
+Aşağıdaki işaretlemeyle başlayalım:
+
+```javascript
+<script src="./widget.js" data-color="#ff0000"></script>
+<section>
+  İçerik burada
+</section>
+<script src="./widget.js" data-color="#00ff00"></script>
+```
+
+Görmek istediğimiz şey; bir bağlantı, ardından "İçerik burada" ve başka bir bağlantıdır. Sadece bu script etiketlerini değiştirmek istemiyoruz, aynı zamanda her biri için farklı sonuçlar elde etmek istiyoruz. Butonun rengi farklı olmalıdır.
+
+`widget.js` dosyasının arkasındaki kodun oldukça kısa olabileceğini öğrenmek beni şaşırttı. Sadece sekiz satır:
+
+```javascript
+(async function loadContent() {
+  const options = document.currentScript.dataset;
+  const node = document.createElement('div');
+  const style = options.color ? `color:${options.color}` : '';
+
+  node.innerHTML = `<a href="http://mysite.com" style="${style}">click me</a>`;
+  document.currentScript.parentNode.replaceChild(node, document.currentScript);
+})();
+```
+
+Burada kullanılan API'lar `document.currentScript` ve `element.dataset`'tir. İlk API, şu anda işlediğimiz scripte erişim sağlar. `dataset` özelliği ise öğenin data attribute'larına hızlı erişim sağlar.
+
+Yukarıdaki kod kesiti yeni bir `div` oluşturur ve içine bir bağlantı ekler. Ardından `replaceChild` kullanarak script etiketini bu yeni oluşturulan öğeyle değiştirir. Sonuç şu şekilde:
+
+```javascript
+<div><a href="http://mysite.com" style="color:#ff0000">click me</a></div>
+<section>
+  Content here
+</section>
+<div><a href="http://mysite.com" style="color:#00ff00">click me</a></div>
+```
+
