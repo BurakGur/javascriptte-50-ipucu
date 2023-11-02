@@ -8,30 +8,31 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 
 ### İçindekiler
 
-| #    | İçerik İsmi                                                  |
-| :--- | ------------------------------------------------------------ |
-| 1    | [Strict Eşitliği](#1-strict-eşitliği)                        |
-| 2    | [Virgül Operatörü (Comma Oparator)](#2-virgül-operatörü-comma-oparator) |
-| 3    | [Spread Operatörü (Spread Operator)](#3-spread-operatörü-spread-operator) |
-| 4    | [Destructuring](#4-destructuring)                            |
-| 5    | [Opsiyonel Zincirleme (Optional Chaining)](#5-opsiyonel-zincirleme-optional-chaining) |
-| 6    | [Referansa veya Değere Göre (By Reference or By Value)](#6-referansa-veya-değere-göre-by-reference-or-by-value) |
-| 7    | [Reducing](#7-reducing)                                      |
-| 8    | [Async/await](#8-asyncawait)                                 |
-| 9    | [Iterable Protocol](#9-iterable-protocol)                    |
-| 10   | [Generators](#10-generators)                                 |
-| 11   | [Priting JSON](#11-priting-json)                             |
-| 12   | [Object.assign](#12-objectassign)                            |
-| 13   | [Capture Groups](#13-capture-groups)                         |
-| 14   | [Etiketli Template Literal](#14-etiketli-template-literal)   |
-| 15   | [Media Query List](#15-media-query-list)                     |
-| 16   | [Event Delegation](#16-event-delegation)                     |
-| 17   | [Error Handling](#17-error-handling)                         |
-| 18   | [Eski Zamanlardan Bir Anı](#18-eski-zamanlardan-bir-anı)     |
-| 19   | [Asenkron Derhal Çağrılan Fonksiyon İfadesi](#19-asenkron-derhal-çağrılan-fonksiyon-i̇fadesi) |
-| 20   | [Asenkron Kuyruk](#20-asenkron-kuyruk) |
-| 21   | [JavaScript Modül Sistemi Olarak Bir Singleton](#21-javascript-modül-sistemi-olarak-bir-singleton) |
-| 22   | [Call-to-action Eklentilerini Script Etiketiyle Değiştirme](#22-call-to-action-eklentilerini-script-etiketiyle-değiştirme) |
+| #  | İçerik İsmi                                                                                                                |
+|:---|----------------------------------------------------------------------------------------------------------------------------|
+| 1  | [Strict Eşitliği](#1-strict-eşitliği)                                                                                      |
+| 2  | [Virgül Operatörü (Comma Oparator)](#2-virgül-operatörü-comma-oparator)                                                    |
+| 3  | [Spread Operatörü (Spread Operator)](#3-spread-operatörü-spread-operator)                                                  |
+| 4  | [Destructuring](#4-destructuring)                                                                                          |
+| 5  | [Opsiyonel Zincirleme (Optional Chaining)](#5-opsiyonel-zincirleme-optional-chaining)                                      |
+| 6  | [Referansa veya Değere Göre (By Reference or By Value)](#6-referansa-veya-değere-göre-by-reference-or-by-value)            |
+| 7  | [Reducing](#7-reducing)                                                                                                    |
+| 8  | [Async/await](#8-asyncawait)                                                                                               |
+| 9  | [Iterable Protocol](#9-iterable-protocol)                                                                                  |
+| 10 | [Generators](#10-generators)                                                                                               |
+| 11 | [Priting JSON](#11-priting-json)                                                                                           |
+| 12 | [Object.assign](#12-objectassign)                                                                                          |
+| 13 | [Capture Groups](#13-capture-groups)                                                                                       |
+| 14 | [Etiketli Template Literal](#14-etiketli-template-literal)                                                                 |
+| 15 | [Media Query List](#15-media-query-list)                                                                                   |
+| 16 | [Event Delegation](#16-event-delegation)                                                                                   |
+| 17 | [Error Handling](#17-error-handling)                                                                                       |
+| 18 | [Eski Zamanlardan Bir Anı](#18-eski-zamanlardan-bir-anı)                                                                   |
+| 19 | [Asenkron Derhal Çağrılan Fonksiyon İfadesi](#19-asenkron-derhal-çağrılan-fonksiyon-i̇fadesi)                              |
+| 20 | [Asenkron Kuyruk](#20-asenkron-kuyruk)                                                                                     |
+| 21 | [JavaScript Modül Sistemi Olarak Bir Singleton](#21-javascript-modül-sistemi-olarak-bir-singleton)                         |
+| 22 | [Call-to-action Eklentilerini Script Etiketiyle Değiştirme](#22-call-to-action-eklentilerini-script-etiketiyle-değiştirme) |
+| 23 | [Nesnelerden Alanları Çıkarma](#23-nesnelerden-alanları-çıkarma)                                                           |
 
 ------
 
@@ -991,7 +992,7 @@ R.register("Alex");
 module.exports = R;
 ```
 
-Her iki dosyadaki `R` sabiti aynı nesnedir. İşte kanıtı: Üçç dosyayı da içe aktaracak şekilde `index.js` oluşturacağız. Bu, `registry.js` modülünden `total` fonksiyonunu çağıracak.
+Her iki dosyadaki `R` sabiti aynı nesnedir. İşte kanıtı: Üç dosyayı da içe aktaracak şekilde `index.js` oluşturacağız. Bu, `registry.js` modülünden `total` fonksiyonunu çağıracak.
 
 ```javascript
 const A = require("./A");
@@ -1048,4 +1049,33 @@ Yukarıdaki kod kesiti yeni bir `div` oluşturur ve içine bir bağlantı ekler.
 </section>
 <div><a href="http://mysite.com" style="color:#00ff00">click me</a></div>
 ```
+
+---
+
+### 23. Nesnelerden Alanları Çıkarma
+
+![Removing fields from objects](https://50tips.dev/tip-assets/23/art.jpg)
+
+Bu kitabın daha önceki bölümlerinde, destructing hakkında bilgi edindik. Bu özelliğin ilginç bir kullanım durumu, bir alanı nesneden kaldırmamıza izin vermesidir.
+
+```javascript
+function allButPoints(obj) {
+  const { points, ...rest } = obj;
+  return rest;
+}
+
+const user = {
+  firstName: "David",
+  lastName: "Bird",
+  points: 231,
+};
+console.log(allButPoints(user));
+// { firstName: 'David', lastName: 'Bird' }
+```
+
+React dünyasında bunu çokça kullanırım, burada bir component bir dizi props alır, ancak benim sadece birkaçını iletmem gerekebilir.
+
+
+
+
 
