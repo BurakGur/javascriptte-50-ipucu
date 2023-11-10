@@ -28,11 +28,12 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 16 | [Event Delegation](#16-event-delegation)                                                                                   |
 | 17 | [Error Handling](#17-error-handling)                                                                                       |
 | 18 | [Eski Zamanlardan Bir Anı](#18-eski-zamanlardan-bir-anı)                                                                   |
-| 19 | [Asenkron Derhal Çağrılan Fonksiyon İfadesi](#19-asenkron-derhal-çağrılan-fonksiyon-i̇fadesi)                              |
+| 19 | [Asenkron Derhal Çağrılan Fonksiyon İfadesi](#19-asenkron-derhal-çağrılan-fonksiyon-i̇fadesi)                               |
 | 20 | [Asenkron Kuyruk](#20-asenkron-kuyruk)                                                                                     |
 | 21 | [JavaScript Modül Sistemi Olarak Bir Singleton](#21-javascript-modül-sistemi-olarak-bir-singleton)                         |
 | 22 | [Call-to-action Eklentilerini Script Etiketiyle Değiştirme](#22-call-to-action-eklentilerini-script-etiketiyle-değiştirme) |
 | 23 | [Nesnelerden Alanları Çıkarma](#23-nesnelerden-alanları-çıkarma)                                                           |
+| 24 | [Zorunlu Fonksiyon Argümanı](#24-zorunlu-fonksiyon-argümanı)                                                               |
 
 ------
 
@@ -1074,6 +1075,38 @@ console.log(allButPoints(user));
 ```
 
 React dünyasında bunu çokça kullanırım, burada bir component bir dizi props alır, ancak benim sadece birkaçını iletmem gerekebilir.
+
+---
+
+### 24. Zorunlu Fonksiyon Argümanı
+
+![A must have function argument](https://50tips.dev/tip-assets/24/art.jpg)
+
+Bildiğimiz gibi, JavaScript strictly typed (sıkı tip kontrolü) dil değildir. Varsayılan olarak tiplerimiz (types) yok. Bu nedenle topluluğun büyük bir kısmı alternatiflerini (örneğin TypeScript gibi) kullanmaya başladı. Bu iyi bir çözüm olsa da, çoğu zaman derleme (build) zamanında çalışır. Kodumuz transpile (bir dildeki kodları başka bir dile çevirme - burada TypeScript kodları JavaScript kodlarına çevrilir.) olduktan ve paketlendikten sonra tip denetimleri ortadan kalkar. Bir süre önce, bir fonksiyon argümanını çalışma zamanında (runtime) zorunlu kılmak için şık bir yol buldum.
+
+```javascript
+function required() {
+  throw new Error(`Missing argument.`);
+}
+function shoppingCenter(time, money = required()) {
+  return {
+    time,
+    money,
+  };
+}
+
+console.log(shoppingCenter("1h", 200));
+// { time: '1h', money: 200 }
+
+console.log(shoppingCenter("2h30min"));
+// Error: Missing argument.
+```
+
+Bu biraz zorlama olabilir çünkü bir hata fırlatmak uygulamanın çökmesine yol açabilir. Ancak uygun bir hata işleme ile bu yöntem iyi bir çözüm olabilir.
+
+
+
+
 
 
 
