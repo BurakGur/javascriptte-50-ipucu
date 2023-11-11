@@ -34,6 +34,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 22 | [Call-to-action Eklentilerini Script Etiketiyle Değiştirme](#22-call-to-action-eklentilerini-script-etiketiyle-değiştirme) |
 | 23 | [Nesnelerden Alanları Çıkarma](#23-nesnelerden-alanları-çıkarma)                                                           |
 | 24 | [Zorunlu Fonksiyon Argümanı](#24-zorunlu-fonksiyon-argümanı)                                                               |
+| 25 | [JavaScript Dosyasını Dinamik Olarak Yükleme](#25-javascript-dosyasını-dinamik-olarak-yükleme)                             |
 
 ------
 
@@ -1104,11 +1105,32 @@ console.log(shoppingCenter("2h30min"));
 
 Bu biraz zorlama olabilir çünkü bir hata fırlatmak uygulamanın çökmesine yol açabilir. Ancak uygun bir hata işleme ile bu yöntem iyi bir çözüm olabilir.
 
+---
 
+### 25. JavaScript Dosyasını Dinamik Olarak Yükleme
 
+![# Loading JavaScript file dynamically](https://50tips.dev/tip-assets/25/art.jpg)
 
+Geçmiş, birçok şeyi kendi başımıza yazmak zorunda kaldığımız ilginç bir zamandı. NPM veya GitHub yoktu. Kendi yükleyicimizi (loader) yazmak zorundaydık. JavaScript dosyalarını dinamik olarak yükleyen bir yardımcı program gibi. Bugün bu sorun, sayısız paket tarafından çözülmüş durumda, ancak yine de bunu paylaşmanın ilginç olacağını düşündüm:
 
+```javascript
+function loadJS(files, done) {
+  const head = document.getElementsByTagName('head')[0];
+  Promise.all(files.map(file => {
+    return new Promise(loaded => {
+      const s = document.createElement('script');
+      s.type = "text/javascript";
+      s.async = true;
+      s.src = file;
+      s.addEventListener('load', (e) => loaded(), false);
+      head.appendChild(s);
+    });
+  })).then(done);
+}
 
+loadJS(["a.js", "b.js"], () => {
+  console.log('Loading completed.');
+});
+```
 
-
-
+Çözüm, dinamik olarak bir `<script>` etiketi eklemek ve dosyanın yüklendiğini anlamak için load event'ini kullanmaktır.
