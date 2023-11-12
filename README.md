@@ -35,6 +35,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 23 | [Nesnelerden Alanları Çıkarma](#23-nesnelerden-alanları-çıkarma)                                                           |
 | 24 | [Zorunlu Fonksiyon Argümanı](#24-zorunlu-fonksiyon-argümanı)                                                               |
 | 25 | [JavaScript Dosyasını Dinamik Olarak Yükleme](#25-javascript-dosyasını-dinamik-olarak-yükleme)                             |
+| 26 | [Okunabilirlik](#26-okunabilirlik)                                                                                         |
 
 ------
 
@@ -1134,3 +1135,96 @@ loadJS(["a.js", "b.js"], () => {
 ```
 
 Çözüm, dinamik olarak bir `<script>` etiketi eklemek ve dosyanın yüklendiğini anlamak için load event'ini kullanmaktır.
+
+---
+
+### 26. Okunabilirlik
+
+![#Readability](https://50tips.dev/tip-assets/26/art.jpg)
+
+Kod kalitesi konusunda pek çok farklı görüş bulunmaktadır. Benim için en iyi tanım, "Benim ve takım arkadaşlarımın anladığı kod, iyi koddur." şeklindedir. Burada kodun okunabilirliği büyük bir rol oynamaktadır. Kodumuzu daha anlaşılır hale getirebilecek bazı ipuçları bulunmaktadır.
+
+1. Bir fonksiyon yazarken, erken return edin. Yani, kodunuzun hızlı bir şekilde hata vermeye ayarlı olmasını sağlayın. Aşağıdaki örneği inceleyin:
+
+```javascript
+if (status === 200 || status === 202) {
+    // ok
+} else {
+  if (status === 500) {
+    // internal server error
+  } else if (status === 400) {
+    // not Found
+  } else {
+    // generic error
+  }
+}
+```
+
+Bazıları, 'mutlu yoldan' yani olumlu durumları önce ele almaktan başlamayı tavsiye ediyor, fakat ben aşağıdaki versiyonun daha iyi olduğunu düşünüyorum.
+
+```javascript
+if (status === 500) {
+  // internal server error
+}
+if (status === 400) {
+  // not Found
+}
+if (status !== 200 && status !== 202) {
+  // generic error
+}
+// ok
+```
+
+2. Bir fonksiyona argüman olarak bayrak* göndermekten kaçının. Bunun nedeni fonksiyonun kendisinin okunabilir olmaması değil, onu çağırdığımız yerin belirsiz görünmesidir.
+
+```javascript
+function saveUser(profileData, isAdmin) {
+  const user = { ...profileData, admin: isAdmin };
+  // ...
+}
+
+saveUser({ name: '...' }, false);
+```
+   
+   - Yazılımda "flag", genellikle bir programın, fonksiyonun veya algoritmanın belirli bir durumunu veya bir özelliğin varlığını göstermek için kullanılan bir değişken türüdür. Flag'ler, genellikle bir şartın doğru (true) veya yanlış (false) olduğunu ifade etmek için kullanılan boolean değerlerdir.
+ 
+ İkinci argüman olan `false`'ın bizi biraz tedirgin ettiğini görün. Bunun nedeni, bu argümanın ne işe yaradığını bilemememizdir. Bu sorunu çözmek için, bu tür bayrakları bir nesneye sarabiliriz. Şöyle ki:
+ 
+ ```javascript
+function saveUser(profileData, { isAdmin }) {
+  const user = { ...profileData, admin: isAdmin };
+  // ...
+}
+
+saveUser({ name: '...' }, { isAdmin: false });
+```
+
+3. Son olarak, adlandırma sürecinden bahsetmek istiyorum. Programlamada en zorlu görevlerden biri olduğunu hepimiz biliyoruz. JavaScript de bu konuda bir istisna değil. Değişkenlerimizi ve fonksiyonlarımızı doğru bir şekilde adlandırarak, okuyucuya bağlam sağlamamız gerekiyor.
+
+```javascript
+const arr = ['BE:Node', 'BE:PHP', 'FE:HTML', 'BE:Python', 'FE:CSS'];
+const arrFiltered = arr.filter(i => i.startsWith('FE:'));
+
+function getText(items) {
+  const str = `Front-end: ${items.map(i => i.replace(/^FE:/, '')).join(', ')}`
+  return str;
+}
+getText(arrFiltered); // Front-end: HTML, CSS
+```
+
+Bu kod yanlış değil, ancak adlandırmayı biraz değiştirirsek:
+
+```javascript
+const languages = ['BE:Node', 'BE:PHP', 'FE:HTML', 'BE:Python', 'FE:CSS'];
+const FELanguages = languages.filter(lang => lang.startsWith('FE:'));
+
+function formatLanguagesText(languages) {
+  const str = `Front-end: ${
+    languages.map(lang => lang.replace(/^FE:/, '')).join(', ')
+  }`
+  return str;
+}
+formatLanguagesText(FELanguages); // Front-end: HTML, CSS
+```
+
+`arr` ve `arrFiltered` sabitleri oldukça genel ve anlamını hızla yitirebilir. `getText` fonksiyonu gerçekten bir string oluşturmakla ilgili, ancak yine de yeterli bağlam sağlamıyor. Dolayısıyla, `languages`, `FELanguages` ve `formatLanguagesText` biraz daha uzun olmakla birlikte, bu kodla ne demek istediğimiz konusunda daha iyi bir fikir veriyor.
