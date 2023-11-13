@@ -36,6 +36,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 24 | [Zorunlu Fonksiyon Argümanı](#24-zorunlu-fonksiyon-argümanı)                                                               |
 | 25 | [JavaScript Dosyasını Dinamik Olarak Yükleme](#25-javascript-dosyasını-dinamik-olarak-yükleme)                             |
 | 26 | [Okunabilirlik](#26-okunabilirlik)                                                                                         |
+| 27 | [Return Bir Son Değildir](#27-return-bir-son-değildir)                                                                     |
 
 ------
 
@@ -1146,7 +1147,7 @@ Kod kalitesi konusunda pek çok farklı görüş bulunmaktadır. Benim için en 
 
 1. Bir fonksiyon yazarken, erken return edin. Yani, kodunuzun hızlı bir şekilde hata vermeye ayarlı olmasını sağlayın. Aşağıdaki örneği inceleyin:
 
-```javascript
+   ```javascript
 if (status === 200 || status === 202) {
     // ok
 } else {
@@ -1177,7 +1178,7 @@ if (status !== 200 && status !== 202) {
 
 2. Bir fonksiyona argüman olarak bayrak* göndermekten kaçının. Bunun nedeni fonksiyonun kendisinin okunabilir olmaması değil, onu çağırdığımız yerin belirsiz görünmesidir.
 
-```javascript
+   ```javascript
 function saveUser(profileData, isAdmin) {
   const user = { ...profileData, admin: isAdmin };
   // ...
@@ -1228,3 +1229,34 @@ formatLanguagesText(FELanguages); // Front-end: HTML, CSS
 ```
 
 `arr` ve `arrFiltered` sabitleri oldukça genel ve anlamını hızla yitirebilir. `getText` fonksiyonu gerçekten bir string oluşturmakla ilgili, ancak yine de yeterli bağlam sağlamıyor. Dolayısıyla, `languages`, `FELanguages` ve `formatLanguagesText` biraz daha uzun olmakla birlikte, bu kodla ne demek istediğimiz konusunda daha iyi bir fikir veriyor.
+
+--- 
+
+### 27. Return Bir Son Değildir
+
+![#The return statement is not the end](https://50tips.dev/tip-assets/27/art.jpg)
+
+Yıllardır JavaScript yazıyor olsam da hala öğreniyorum. Ve basit şeylerle hâlâ şaşırıyorum. Bu bir pattern ya da sadece bir yazım tarzı olabilir. Aşağıdakilere bir göz atın:
+
+```javascript
+function calculateAge(birthDate) {
+  return formatDate(today() - birthDate);
+
+  function today() {
+    return new Date();
+  }
+
+  function formatDate(diff) {
+    return Math.ceil(diff / (1000 * 3600 * 24) / 365);
+  }
+  
+}
+
+const age = calculateAge(new Date(1984, 1, 1));
+console.log(`You are approx ${age} years old.`);
+// result: You are approx 38 years old
+```
+
+`calculateAge` fonksiyonunda, return ifadesinin oldukça erken tanımlandığını görün. Ancak, bunun ardından iki fonksiyon tanımı var. Bu örnek, return ifadesinden sonraki kodun ölü olmadığını gösteriyor. Bazı şeyler fonksiyonun en üstüne taşınır (hoisted) ve biz onları kullanabiliriz.
+
+Hoisting (yükseltme), kodu yürütmeden önce motorun bellek ayırdığı bir mekanizmadır. Başka bir deyişle, yorumlayıcı, bazı şeyleri mevcut kapsamın (scope) en üstüne "taşır". Bizim durumumuzda bu, `today` ve `formatDate` fonksiyonlarıdır.
