@@ -37,6 +37,8 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 25 | [JavaScript Dosyasını Dinamik Olarak Yükleme](#25-javascript-dosyasını-dinamik-olarak-yükleme)                             |
 | 26 | [Okunabilirlik](#26-okunabilirlik)                                                                                         |
 | 27 | [Return Bir Son Değildir](#27-return-bir-son-değildir)                                                                     |
+| 28 | [Her Zaman Bir Değer Alın](#28-her-zaman-bir-değer-alın)                                                                   |
+| 29 | [This](#29-this)                                                                                                           |
 
 ------
 
@@ -1260,3 +1262,104 @@ console.log(`You are approx ${age} years old.`);
 `calculateAge` fonksiyonunda, return ifadesinin oldukça erken tanımlandığını görün. Ancak, bunun ardından iki fonksiyon tanımı var. Bu örnek, return ifadesinden sonraki kodun ölü olmadığını gösteriyor. Bazı şeyler fonksiyonun en üstüne taşınır (hoisted) ve biz onları kullanabiliriz.
 
 Hoisting (yükseltme), kodu yürütmeden önce motorun bellek ayırdığı bir mekanizmadır. Başka bir deyişle, yorumlayıcı, bazı şeyleri mevcut kapsamın (scope) en üstüne "taşır". Bizim durumumuzda bu, `today` ve `formatDate` fonksiyonlarıdır.
+
+---
+
+
+### 28. Her Zaman Bir Değer Alın
+
+![#Always get a value](https://50tips.dev/tip-assets/28/art.jpg)
+
+JavaScript, varsayılan olarak tür tanımlamalarına sahip değildir. İlk günden beri böyle olmuştur. Günümüzde, TypeScript gibi dilleri kullanarak bu sorunu çözebiliriz. Ancak, birkaç bölüm önce de belirttiğimiz gibi, bu çözümler build zamanında işler. Kodumuz tarayıcıda çalışırken, hala eski iyi Vanilla JavaScript ile başa çıkmak zorundayız.
+
+Diyelim ki gerçekten bir değere (value) sahip olmamız gereken bir durumla karşılaşıyoruz. Fonksiyonlar için bu, şu şekilde bir varsayılan değer ayarlamak anlamına gelir:
+
+```javascript
+function calculate(value = 0) {
+  return value * 2;
+}
+```
+
+Diğer her şey için, mantıksal VEYA (OR) operatörünü kullanabiliriz:
+
+```javascript
+const user = { age: 37 };
+const name = user.firstName || "unknown";
+console.log(name);
+```
+
+Bu iki seçenek, bir varsayılan değerimiz (default value) varsa işe yarar. Ancak, bir varsayılan değerimiz yoksa ve geliştiricinin bir argüman geçmesini zorlamamız gerekiyorsa, bu akıllıca hileyi kullanabiliriz.
+
+```javascript
+const required = () => {
+  throw new Error("Please provide a number.");
+};
+const calculate = (value = required()) => {
+  return value + 42;
+};
+console.log(calculate(8)); // 50
+console.log(calculate(28)); // 70
+calculate(); // throws error
+```
+
+--- 
+
+### 29. This
+
+![#This](https://50tips.dev/tip-assets/29/art.jpg)
+
+Her JavaScript kitabında veya kursunda bu `this` anahtar kelimesi için her zaman bir bölüm bulunur. Topluluğun son birkaç yılda dili daha fonksiyonel paradigmalara doğru ittiğini hissediyorum. `this` anahtar kelimesini artık çok fazla kullanmıyoruz. Ve hala insanları şaşırttığına bahse girerim, çünkü anlamı bağlama göre farklılık gösterir. Öyleyse, `this`'in global kapsamı belirttiği birkaç örnek ile başlayalım:
+
+```javascript
+function A() {
+  console.log(this); // this = global object (window)
+}
+const B = () => console.log(this); // this = global object (window)
+const C = {
+  method: () => console.log(this), // this = global object (window)
+};
+```
+
+Bu durumlarda fonksiyonları somut bir bağlam olmadan çağırıyoruz. İşte bu yüzden global kapsam seçilir. (*Burada, katı modda - strict mode `this`'in `undefined`'e eşit olacağını belirtmek zorundayız*)
+
+Fonksiyon, bir sınıfın ya da bir nesnenin parçası olduğunda bir bağlamımız vardır. O zaman `this`, belirli bir nesneye veya sınıfın örneğine işaret eder.
+
+```javascript
+class D {
+  run() {
+    console.log(this); // this = instance of the class
+  }
+}
+
+const E = {
+  method() {
+    console.log(this); // this = the constant E itself
+  },
+};
+
+function F() {
+  console.log(this); // this = an instance of the F prototype
+}
+new F();
+```
+
+JavaScript, ayrıca kapsamı manuel olarak ayarlama yeteneği de sunar. `apply` ve `call` fonksiyonlarının ilk argümanı, fonksiyonun `this`'i olur.
+
+```javascript
+const foo = { id: 'foo' };
+function G() {
+  console.log(this); // this = foo
+}
+G.apply(foo);
+G.call(foo);
+```
+
+Eğer fonksiyonu çağırmak istemiyor fakat onun `this`'ini tanımlamak istiyorsak, `bind` metodunu kullanabiliriz. Bu API hakkında sonraki bölümlerde konuşacağız.
+
+```javascript
+function H() {
+  console.log(this.name);
+}
+const HFunc = H.bind({ name: 'foobar'});
+HFunc(); // foobar
+```
