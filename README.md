@@ -39,6 +39,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 27 | [Return Bir Son Değildir](#27-return-bir-son-değildir)                                                                     |
 | 28 | [Her Zaman Bir Değer Alın](#28-her-zaman-bir-değer-alın)                                                                   |
 | 29 | [This](#29-this)                                                                                                           |
+| 30 | [Kapsam](#30-kapsam)                                                                                                       |
 
 ------
 
@@ -1363,3 +1364,42 @@ function H() {
 const HFunc = H.bind({ name: 'foobar'});
 HFunc(); // foobar
 ```
+
+--- 
+
+### 30. Kapsam
+
+![#Scope](https://50tips.dev/tip-assets/30/art.jpg)
+
+JavaScript geliştirici iş görüşmelerinde, neredeyse her zaman sorulan iki soru vardır - ilki `this` anahtar kelimesidir (*önceki bölümde ele alındı*), diğeri ise kapsam (scope)'dır. Kapsamı, belirli bir değişken, sabit, fonksiyon vb. setini tutan bir ortam olarak düşünmeyi seviyorum. Ve bu ortamın bir parçası olarak, içindeki tüm aktörler birbirlerine görünürdür. Kapsamı anlamak, özellikle görünürlüğü anlamak nedeniyle önemlidir. Neye erişip neye erişemeyeceğimizi iyi bilmemiz gerekmektedir.
+
+Dört tür kapsam vardır: global, function, block ve module. Her birini hızlı bir örnekle açıklayalım:
+
+```javascript
+let total = 0;
+function calculate(a, b, c) {
+  const sum = a + b + c;
+  if (a > b) {
+    const diff = a - b;
+    return diff + c;
+  }
+  return sum;
+}
+```
+
+`total`, global kapsamda yaşar. Bu ortamın bir parçası olduğu için, tüm iç içe geçmiş ortamlar (kapsamlar) tarafından erişilebilir (görünürdür). Örneğin, `if` ifadesinin içinde kullanabiliriz. `sum` ise, `calculate` fonksiyonunun (function) kapsamında yaşar. Bu fonksiyonun dışında erişilemez. Ve `diff` de, block kapsamında tanımlanmıştır ve `if` ifadesinin dışında erişilemez. Module kapsamı genellikle bir dosya tarafından tanımlanan kapsamdır.
+
+```javascript
+// A.js
+let inc = 0;
+export default function calculate(a, b, c) {
+  inc += 1;
+  return a + b + c;
+}
+
+// B.js
+import calculate from './A.js';
+console.log(calculate(1, 2, 3));
+```
+
+Bu örnekte, `B.js` dosyasındaki kod, `A.js` dosyasında tanımlanan `inc` değişkenine erişemez.
