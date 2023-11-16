@@ -40,6 +40,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 28 | [Her Zaman Bir Değer Alın](#28-her-zaman-bir-değer-alın)                                                                   |
 | 29 | [This](#29-this)                                                                                                           |
 | 30 | [Kapsam](#30-kapsam)                                                                                                       |
+| 31 | [Manuel Olarak Block Kapsamı Oluşturma](#31-manuel-olarak-block-kapsamı-oluşturma)                                         |
 
 ------
 
@@ -1403,3 +1404,32 @@ console.log(calculate(1, 2, 3));
 ```
 
 Bu örnekte, `B.js` dosyasındaki kod, `A.js` dosyasında tanımlanan `inc` değişkenine erişemez.
+
+--- 
+
+### 31. Manuel Olarak Block Kapsamı Oluşturma
+
+![#Manually creating block scope](https://50tips.dev/tip-assets/31/art.jpg)
+
+Dört farklı türde kapsamı gördük. Şimdi block kapsamıyla ilgili küçük bir ipucu paylaşmak istiyorum, özellikle de onu bilinçli olarak oluşturmak gerektiğinde. Bu ihtiyacı nadiren görüyorum, ancak yine de bilinmesi iyi olur. Aşağıdaki duruma bir göz atın:
+
+```javascript
+function test(operation) {
+  const message = "In progress.";
+  const { message, value } = operation;
+  // throws: Identifier 'message' has already been declared
+}
+```
+
+`message` bir sabittir (constant) ve bunu `test` fonksiyonunun kapsamında tanımlıyoruz. İsim çakışması olduğundan `operation` argümanını destruct edemiyoruz.
+
+Bunu çözmenin hızlı bir yolu takma ad oluşturmak olsa da, block kapsamı kullanarak da çözebiliriz.
+
+```javascript
+function test(operation) {
+  const message = "In progress.";
+  {
+    const { message, value } = operation;
+  }
+}
+```
