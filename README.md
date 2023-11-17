@@ -41,7 +41,8 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 29 | [This](#29-this)                                                                                                           |
 | 30 | [Kapsam](#30-kapsam)                                                                                                       |
 | 31 | [Manuel Olarak Block Kapsamı Oluşturma](#31-manuel-olarak-block-kapsamı-oluşturma)                                         |
-
+| 32 | [Call, Apply ve Bind](#32-call-apply-ve-bind)                                                                              |
+ 
 ------
 
 ## 1. Strict Eşitliği
@@ -1433,3 +1434,35 @@ function test(operation) {
   }
 }
 ```
+
+--- 
+
+### 32. Call, Apply ve Bind
+
+![#Call, apply and bind](https://50tips.dev/tip-assets/32/art.jpg)
+
+Kapsamın ne olduğunu bildiğimize göre, `call`, `apply` ve `bind` metotlarını incelemenin zamanı geldi. Bu metotlar, geçirilen fonksiyonların `this`'ini tanımladıkları için JavaScript'teki bağlam konusuna dokunuyorlar. Aşağıdaki örneği göz önünde bulundurun:
+
+```javascript
+const user = { firstName: "Krasimir" };
+
+function message(greeting) {
+  console.log(`${greeting} ${this.firstName}!`);
+}
+message('Hey'); // Hey undefined!
+```
+
+`message` fonksiyonunun, `user`'ı kendi bağlamı içerisinde istiyoruz. Böylece `this.firstName` kullanabiliriz. Bu üç fonksiyon da bu sorunu çözebilir.
+
+```javascript
+const user = { firstName: "Krasimir" };
+
+function message(greeting) {
+  console.log(`${greeting} ${this.firstName}!`);
+}
+message.call(user, 'Hey'); // Hey Krasimir!
+message.apply(user, ['Hi']); // Hi Krasimir!
+message.bind(user, 'Hola')(); // Hola Krasimir!
+```
+
+`call` metodu, istenen `this`'i ilk argüman olarak kabul eder ve ardından fonksiyonun diğer parametrelerini takip eder. `apply` aynı şekilde çalışır, ancak ekstra parametreleri bir  (array) olarak geçeriz. `bind` biraz farklıdır çünkü fonksiyonu hemen yürütmez. Kısmi bir uygulama yapar (bu konuyu daha sonra tartışacağız). `bind` sonucu, önceden tanımlanmış parametrelerle çalıştırabileceğimiz başka bir fonksiyondur.
