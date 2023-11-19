@@ -43,6 +43,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 31 | [Manuel Olarak Block Kapsamı Oluşturma](#31-manuel-olarak-block-kapsamı-oluşturma)                                         |
 | 32 | [Call, Apply ve Bind](#32-call-apply-ve-bind)                                                                              |
 | 33 | [Zincir](#33-zincir)                                                                                                       |
+| 34 | [Recursion](#34-recursion)                                                                                                 |
 
 ------
 
@@ -1543,3 +1544,56 @@ console.log(total); // 177
 ```
 
 Unutmayın ki `total`, `add` ile aynı değil çünkü aynı `api` nesnesini döndürmüyor.
+
+### 34. Recursion
+
+![#Recursion](https://50tips.dev/tip-assets/34/art.jpg)
+
+Recursion (Özyineleme), muhtemelen programlamadaki en eski kavramlardan biridir. Bu, bir fonksiyonun kendisini çağırdığı paradigmadır. Genellikle, problemleri daha küçük alt problemlere ayırmayı gerektiren sorunları çözmek için bu tekniği kullanırız.
+
+JavaScript'te, en sevdiğim kullanım durumu derinlemesine iç içe geçmiş bir nesne alanını okumaktır. Diyelim ki şöyle bir yapıya sahibiz:
+
+```javascript
+const user = {
+  profile: {
+    age: 36,
+    name: { first: "Krasimir", last: "Tsonev" },
+  },
+};
+```
+
+Kullanıcının soyadını okumak istiyoruz. Bunun için `user.profile.name.last` yazmamız gerekiyor. Ve tabii ki, verilerin bazıları eksikse, şu hatayı alacağız:
+
+```javascript
+Cannot read properties of undefined (reading 'last')
+```
+
+Bu sorunu çözmek için lodash'in `get` metodu gibi yardımcı araçları kullanırız.
+
+```javascript
+get(user, 'profile.name.last', 'unknown');
+```
+
+Bu araç, değeri güvenli bir şekilde okumayı dener ve eğer mevcut değilse `unknown` ifadesini döndürür.
+
+İşte bu tür bir aracın kodunun nasıl görünebileceği şöyledir:
+
+```javascript
+function get(obj, path, fallback) {
+  const parts = path.split(".");
+  const key = parts.shift();
+  if (typeof obj[key] !== "undefined") {
+    return parts.length > 0 ?
+      get(obj[key], parts.join("."), fallback) :
+      obj[key];
+  }
+  return fallback;
+}
+
+console.log(get(user, "profile.name.first")); // Krasimir
+console.log(get(user, "profile.age")); // 36
+console.log(get(user, "profile.registered")); // undefined
+console.log(get(user, "profile.registered", false)); // false
+```
+
+`get` fonksiyonunun, yolun son kısmına ulaşana kadar kendisini nasıl tekrar tekrar çağırdığına dikkat edin.
