@@ -42,7 +42,8 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 30 | [Kapsam](#30-kapsam)                                                                                                       |
 | 31 | [Manuel Olarak Block Kapsamı Oluşturma](#31-manuel-olarak-block-kapsamı-oluşturma)                                         |
 | 32 | [Call, Apply ve Bind](#32-call-apply-ve-bind)                                                                              |
- 
+| 33 | [Zincir](#33-zincir)                                                                                                       |
+
 ------
 
 ## 1. Strict Eşitliği
@@ -1466,3 +1467,79 @@ message.bind(user, 'Hola')(); // Hola Krasimir!
 ```
 
 `call` metodu, istenen `this`'i ilk argüman olarak kabul eder ve ardından fonksiyonun diğer parametrelerini takip eder. `apply` aynı şekilde çalışır, ancak ekstra parametreleri bir  (array) olarak geçeriz. `bind` biraz farklıdır çünkü fonksiyonu hemen yürütmez. Kısmi bir uygulama yapar (bu konuyu daha sonra tartışacağız). `bind` sonucu, önceden tanımlanmış parametrelerle çalıştırabileceğimiz başka bir fonksiyondur.
+
+
+--- 
+
+### 33. Zincir
+
+![#Chaining](https://50tips.dev/tip-assets/33/art.jpg)
+
+Web'in tamamen jQuery'den oluştuğu günlerde, sürekli olarak bir desen - fonksiyon (veya metod) zinciri kullanıyorduk. Bu şöyle görünür:
+
+```javascript
+$("#p1")
+  .css("color", "red")
+  .slideUp(2000)
+  .slideDown(2000);
+```
+
+İlk satır olan `$("#p1")`, bir DOM öğesini seçer. Geri kalanı ise rengini değiştirir ve animasyon ekler.
+
+Çok sayıda küçük fonksiyonumuz varsa ve bunların tek bir nesne üzerinde yürütülmesi gerekiyorsa, metod zincirini düşünmeliyiz.
+
+Bu desenin nasıl uygulandığını görelim. Bir alışveriş sepeti fonksiyonu tanımlayacağız:
+
+```javascript
+function ShoppingCart() {
+  const products = [];
+  function add(product, price) {
+    products.push({ product, price });
+  }
+  function total() {
+    return products.reduce((res, product) => (res += product.price), 0);
+  }
+  return { add, total }
+}
+```
+
+Bir alışveriş sepeti oluşturabilir, ürünler ekleyebilir ve sonunda toplam fiyatı alabiliriz.
+
+```javascript
+const cart = ShoppingCart();
+cart.add("t-shirt", 50)
+cart.add("backpack", 120)
+cart.add("socks", 7)
+console.log(cart.total()); // 177
+```
+
+Şimdi `add` metodunu zincir yapılabilir hale getirelim. Bunu yapmak için, bu `add` metodunu içeren bir nesne döndürmeliyiz. Böylece, bunu tekrar çağırabiliriz.
+
+```javascript
+function ShoppingCart() {
+  const products = [];
+  const api = { add, total };
+  function add(product, price) {
+    products.push({ product, price });
+    return api;
+  }
+  function total() {
+    return products.reduce((res, product) => (res += product.price), 0);
+  }
+  return api;
+}
+```
+
+Şimdi örneğimizi şu şekilde yeniden yazabiliriz:
+
+```javascript
+const cart = ShoppingCart();
+const total = cart
+  .add("t-shirt", 50)
+  .add("backpack", 120)
+  .add("socks", 7)
+  .total();
+console.log(total); // 177
+```
+
+Unutmayın ki `total`, `add` ile aynı değil çünkü aynı `api` nesnesini döndürmüyor.
