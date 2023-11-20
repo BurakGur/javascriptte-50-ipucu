@@ -44,6 +44,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 32 | [Call, Apply ve Bind](#32-call-apply-ve-bind)                                                                              |
 | 33 | [Zincir](#33-zincir)                                                                                                       |
 | 34 | [Recursion](#34-recursion)                                                                                                 |
+| 35 | [Higher Order Fonksiyonlar](#35-higher-order-fonksiyonlar)                                                                 |
 
 ------
 
@@ -1597,3 +1598,30 @@ console.log(get(user, "profile.registered", false)); // false
 ```
 
 `get` fonksiyonunun, yolun son kısmına ulaşana kadar kendisini nasıl tekrar tekrar çağırdığına dikkat edin.
+
+--- 
+
+### 35. Higher Order Fonksiyonlar
+
+![#Higher order functions](https://50tips.dev/tip-assets/35/art.jpg)
+
+Her uygulamanın temel yapı taşı fonksiyondur. JavaScript'teki fonksiyonların birinci sınıf vatandaşlar olduğunu muhtemelen duymuşsunuzdur. Bu, bir fonksiyonu bir değişkene atayabileceğimiz ve bu değişkeni bir metoda geçirebileceğimiz veya sonuç olarak döndürebileceğimiz anlamına gelir. Örnek:
+
+```javascript
+function getProducts(fetchData) {
+  return async (categoryId) => {
+    const data = await fetchData({ id: categoryId });
+    return data.products;
+  }
+}
+function fetchData(query) {
+  return fetch(`https://site.com/api/products?id=${query.id}`);
+}
+
+const byCategoryId = getProducts(fetchData);
+const shoes = await byCategoryId('XYZ');
+```
+
+`fetchData` bir fonksiyondur ve biz onu `getProducts` fonksiyonuna bir argüman olarak geçiriyoruz. Dahili olarak, `getProducts` başka bir fonksiyon döndürür. Bu tür durumlarda, `getProducts` fonksiyonunun bir higher ordder fonksiyonu olduğunu söyleriz.
+
+Sürekli olarak higher order fonksiyonları yazıyoruz. Bunun nedeni, bu fonksiyonların daha küçük, tek işlevli metodların üzerinde doğal bir soyutlama olmalarıdır. Nadiren tüm logic'i tek bir yerde yazmak istiyoruz, bu yüzden onu daha küçük, yeniden kullanılabilir fonksiyonlara ayırırız. Daha sonra bu fonksiyonlarla işlem yapan yapıştırıcı kodlara ihtiyacımız olur. Çoğu zaman, bu yapıştırıcı kod, higher order fonksiyonlardan oluşur.
