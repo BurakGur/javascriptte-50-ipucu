@@ -45,6 +45,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 33 | [Zincir](#33-zincir)                                                                                                       |
 | 34 | [Recursion](#34-recursion)                                                                                                 |
 | 35 | [Higher Order Fonksiyonlar](#35-higher-order-fonksiyonlar)                                                                 |
+| 36 | [Önbelleğe Alma](#36-önbelleğe-alma)                                                                                       |
 
 ------
 
@@ -1625,3 +1626,48 @@ const shoes = await byCategoryId('XYZ');
 `fetchData` bir fonksiyondur ve biz onu `getProducts` fonksiyonuna bir argüman olarak geçiriyoruz. Dahili olarak, `getProducts` başka bir fonksiyon döndürür. Bu tür durumlarda, `getProducts` fonksiyonunun bir higher ordder fonksiyonu olduğunu söyleriz.
 
 Sürekli olarak higher order fonksiyonları yazıyoruz. Bunun nedeni, bu fonksiyonların daha küçük, tek işlevli metodların üzerinde doğal bir soyutlama olmalarıdır. Nadiren tüm logic'i tek bir yerde yazmak istiyoruz, bu yüzden onu daha küçük, yeniden kullanılabilir fonksiyonlara ayırırız. Daha sonra bu fonksiyonlarla işlem yapan yapıştırıcı kodlara ihtiyacımız olur. Çoğu zaman, bu yapıştırıcı kod, higher order fonksiyonlardan oluşur.
+
+--- 
+
+### 36. Önbelleğe Alma
+
+![#Memoization](https://50tips.dev/tip-assets/36/art.jpg)
+
+Önceki bölüm, JavaScript'teki ana aracın fonksiyonlar olduğunu gösterdi. Ve eğer bir şey tekrar tekrar çalıştırılıyorsa, onu optimize etmeye çalışmak mantıklıdır. Bunu başarmanın bir yolu da önbelleğe almaktır (memoization).
+
+Önbelleğe alma, önceki yürütmenin (execution) yakalanması ve saklanmasıdır. Elbette, fonksiyonun ne yaptığına bağlıdır, ancak bazen argümanlar aynıysa, sonucun da aynı olacağını varsayarız. Bu tür durumlarda, çıktıyı önbelleğe (cache) alabilir ve hemen döndürebiliriz.
+
+```javascript
+function pythagorean(a, b) {
+  return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+}
+```
+
+`pythagorean` fonksiyonu senkron hesaplama yapar. Argümanlar aynı kaldığı sürece sonuç değişmez. Bu, önbelleğe alma için mükemmel bir adaydır.
+
+```javascript
+function pythagorean(a, b) {
+  console.log('Doing the job ...');
+  return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+}
+function memo(func) {
+  var cache = {};
+  return function () {
+    var key = JSON.stringify(arguments);
+    if (cache[key]) {
+      return cache[key];
+    } else {
+      return (cache[key] = func.apply(null, arguments));
+    }
+  };
+}
+
+const mPythagorean = memo(pythagorean);
+
+console.log(mPythagorean(4, 3)); // "Doing the job ..." followed by "5"
+console.log(mPythagorean(4, 3)); // only "5"
+console.log(mPythagorean(4, 3)); // only "5"
+console.log(mPythagorean(4, 3)); // only "5"
+```
+
+`mPythagorean` fonksiyonunun sadece ilk çağrısı gerçek işi yapar. Geri kalan çağrılar (calls) daha performanslıdır, çünkü `memo` önbelleğe alınmış sonucu döndürür.
