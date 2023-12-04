@@ -46,6 +46,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 34 | [Recursion](#34-recursion)                                                                                                 |
 | 35 | [Higher Order Fonksiyonlar](#35-higher-order-fonksiyonlar)                                                                 |
 | 36 | [Önbelleğe Alma](#36-önbelleğe-alma)                                                                                       |
+| 37 | [Kısmi Uygulama](#37-kısmi-uygulama)                                                                                       |
 
 ------
 
@@ -1671,3 +1672,59 @@ console.log(mPythagorean(4, 3)); // only "5"
 ```
 
 `mPythagorean` fonksiyonunun sadece ilk çağrısı gerçek işi yapar. Geri kalan çağrılar (calls) daha performanslıdır, çünkü `memo` önbelleğe alınmış sonucu döndürür.
+
+--- 
+
+### 37. Kısmi Uygulama 
+
+![#Partial application](https://50tips.dev/tip-assets/37/art.jpg)
+
+Fonksiyonel dillerde geliştirme yapmış yazılımcılar, JavaScript'i kullanırken rahat hissederler çünkü dil fonksiyonel konseptleri destekler. Bunlardan biri de kısmi uygulamadır (`partial application`).
+
+Kısmi uygulama, bir fonksiyonun bazı argümanlarının zaten uygulanmış halde kopyalanmasıdır. Biraz tuhaf gelebilir, ancak bu, yararlı bir tekniktir. Şu örneği düşünün:
+
+```javascript
+function createLogMessage(type, message) {
+  return `${type}: ${message}`;
+}
+```
+
+ve bu fonksiyonun bazı potansiyel kullanım şekilleri:
+
+```javascript
+console.log(createLogMessage('Error', 'Ops!'));
+// Error: Ops!
+console.log(createLogMessage('Info', 'Data delivered.'));
+// Info: Data delivered.
+```
+
+Uygulamamızın her yerinde `createLogMessage` fonksiyonunu nasıl kullanmamız gerektiğini düşünün. Her seferinde türü belirtmemiz gerekiyor. Bunu bir sabite çıkarabiliriz, ancak bu yine de bir çoğaltmadır.
+
+Kısmi uygulama kullanarak hayatımızı kolaylaştırabiliriz.
+
+```javascript
+function createLogMessage(type, message) {
+  return `${type}: ${message}`;
+}
+function partial(func, ...args1) {
+  return (...args2) => {
+    return func(...args1, ...args2);
+  }
+}
+const onError = partial(createLogMessage, 'Error');
+const onInfo = partial(createLogMessage, 'Info');
+
+console.log(onError('Ops!'));
+// Error: Ops!
+console.log(onInfo('Data delivered.'));
+// Success: Data delivered.
+```
+
+Sadece kendimizi tekrar etmekten kaçınmakla kalmaz, aynı zamanda `onError` ve `onSuccess` gibi küçük yardımcılarımız da olur.
+
+JavaScript'in kısmi uygulama yapmayı sağlayan yerleşik bir metodu vardır. Kapsam hakkında konuşurken bunu bahsetmiştik. Bu, `bind` fonksiyonudur. Son kod parçacığını şu şekilde değiştirebiliriz:
+
+```javascript
+const onError = createLogMessage.bind(null, 'Error');
+const onInfo = createLogMessage.bind(null, 'Info');
+```
