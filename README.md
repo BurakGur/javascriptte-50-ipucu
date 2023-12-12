@@ -47,6 +47,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 35 | [Higher Order Fonksiyonlar](#35-higher-order-fonksiyonlar)                                                                 |
 | 36 | [Önbelleğe Alma](#36-önbelleğe-alma)                                                                                       |
 | 37 | [Kısmi Uygulama](#37-kısmi-uygulama)                                                                                       |
+| 38 | [Currying](#38-currying)                                                                                                   |
 
 ------
 
@@ -1728,3 +1729,64 @@ JavaScript'in kısmi uygulama yapmayı sağlayan yerleşik bir metodu vardır. K
 const onError = createLogMessage.bind(null, 'Error');
 const onInfo = createLogMessage.bind(null, 'Info');
 ```
+
+--- 
+
+### 38. Currying
+
+![#Currying](https://50tips.dev/tip-assets/38/art.jpg)
+
+Fonksiyonel programlamada başka popüler bir paradigma, currying'dir. Kısmi uygulamaya benzer şekilde, fonksiyon çağrısını bölmeye olanak tanır. Ancak bu sefer, her seferinde bir argüman uygularız. Kısmi uygulamada ise, her çağrı için birden fazla argüman uygulayabiliriz. Aşağıda bulunan `update` fonksiyonuna bakın. Üç argümanı vardır:
+
+```javascript
+const user = { age: 33, job: "developer" };
+
+function update(user, prop, value) {
+  user[prop] = value;
+}
+update(user, "age", 36);
+```
+
+İdeal olarak, `user` nesnesini tekrar tekrar geçirmek istemeyiz. İyi bir adım, zaten uygulanmış olan ve sadece `prop` ve `value` kabul eden bir fonksiyon oluşturmaktır. Bunu kısmi uygulama kullanarak yapabiliriz.
+
+```javascript
+const user = { age: 33, job: "developer" };
+function update(user, prop, value) {
+  user[prop] = value;
+}
+const updateUser = partial(update, user);
+updateUser("age", 36);
+
+function partial(func, ...args1) {
+  return (...args2) => {
+    return func(...args1, ...args2);
+  }
+}
+```
+
+Şimdi, bu örneği currying'e dönüştürelim:
+
+```javascript
+const user = { age: 33, job: "developer" };
+function update(user, prop, value) {
+  user[prop] = value;
+}
+const curriedUpdate = curry(update);
+const updateUser = curriedUpdate(user);
+const updateAge = updateUser('age');
+updateAge(36);
+
+function curry(f) {
+  return function curried(...params) {
+    if (params.length >= f.length) {
+      return f.apply(this, params);
+    } else {
+      return function(...params2) {
+        return curried.apply(this, params.concat(params2));
+      }
+    }
+  };
+}
+```
+
+`partial` yerine artık `curry`'ye sahibiz. Bu, fonksiyonlarımızın curried versiyonunu döndüren bir yardımcıdır. N argümanlı orijinal fonksiyonumuz, bir argümanlı N fonksiyona dönüştürülür.
