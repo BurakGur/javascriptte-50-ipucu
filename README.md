@@ -48,6 +48,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 36 | [Önbelleğe Alma](#36-önbelleğe-alma)                                                                                       |
 | 37 | [Kısmi Uygulama](#37-kısmi-uygulama)                                                                                       |
 | 38 | [Currying](#38-currying)                                                                                                   |
+| 39 | [Bağımlılık Enjeksiyonu](#39-bağımlılık-enjeksiyonu)                                                                       |
 
 ------
 
@@ -1790,3 +1791,72 @@ function curry(f) {
 ```
 
 `partial` yerine artık `curry`'ye sahibiz. Bu, fonksiyonlarımızın curried versiyonunu döndüren bir yardımcıdır. N argümanlı orijinal fonksiyonumuz, bir argümanlı N fonksiyona dönüştürülür.
+
+--- 
+
+### 39. Bağımlılık Enjeksiyonu
+
+![#Dependency injection](https://50tips.dev/tip-assets/39/art.jpg)
+
+Bağımlılık enjeksiyonu (Dependency Injection - DI) veya kontrolün ters çevrilmesi (Inverse of Control - IoC), JavaScript ekosisteminde popüler olmayan bir kavramdır. Bazı durumlarda, framework geliştiriciyi belirli bir DI kullanmaya zorlayabilir. Ancak bunun dışında, bağımlılık yönetiminin çözümü, günümüz projelerinin temel sorunları arasında yer almamaktadır. DI'nin gerekliliğini daha iyi anlamak için aşağıdaki örneği inceleyin:
+
+```javascript
+async function postToFacebook(message, service, settings) {
+  const client = new Service({ APIKey: settings.fb.key });
+  const result = await client.post(message);
+  return result;
+}
+```
+
+Bu, popüler bir sosyal ağa mesaj gönderen fonksiyonun üç bağımlılığı vardır. İlki message'dır. Her seferinde farklı olduğundan, bunu olduğu gibi bırakmamız gerekiyor. Diğer iki tanesi bilinen bağımlılıklardır. Hangi hizmeti kullanacağımızı ve API anahtarını biliyoruz. Şimdi soru şu: "Bu fonksiyonun hizmeti başlatması gerekiyor mu?". Muhtemelen hayır. Başka bir rahatsız edici gerçek, bu fonksiyonu kullandığımız her yerde `Service` sınıfını ve `settings`'i taşımamız gerektiğidir. Bir tasarım sorunumuz var.
+
+Çözümlerden biri, bağımlılık enjeksiyonuna güvenmek ve hizmeti başka bir yerde oluşturup fonksiyona ihtiyaç duyduğumuzda teslim etmektir. Uygulama açısından, bir DI konteynerine ihtiyacımız var. Şöyle bir şey gibi:
+
+```javascript
+const Container = {
+  _storage: {},
+  register(key, deps, func) {
+    this._storage[key] = { deps, func };
+  },
+  get(key) {
+    if (!this._storage[key]) throw new Error(`Missing ${key}`);
+    const { func, deps } = this._storage[key];
+    return (...args) => {
+      const resolvedDeps = deps.map((key) => this.get(key));
+      return func(...resolvedDeps, ...args);
+    };
+  },
+};
+```
+
+Bunu kullanarak, bağımlılıklarımızı başlatabilir ve kaydedebiliriz. İlk olarak `settings`, ardından da `Service` olacaktır.
+
+```javascript
+Container.register('settings', [], () => {
+  return { fb: { key: 'xxx' } }
+});
+Container.register('client', ['settings'], (settings) => {
+  return new Service({ APIKey: settings().fb.key });
+});
+```
+
+Bu koddan sonra, konteynerimiz `postToFacebook` fonksiyonunun tüm bağımlılıklarını biliyor olacak. Ayrıca, `client` ile `settings` arasında bir bağlantı tanımladığımıza da dikkat edin. Bu bağımlılık sorununu burada, konteyner seviyesinde hemen çözüyoruz.
+
+Sonraki adım, `postToFacebook` fonksiyonunu kaydetmektir. Bu son adım önemlidir. Bu, konteynerin bağımlılıkları enjekte etmesine izin verdiğimiz andır.
+
+```javascript
+Container.register('postToFacebook', ['client'], async (client, message) => {
+  const result = await client().post(message);
+  return result;
+});
+```
+
+Bağımlılıklar, argüman listesinde ilk sırada yer alır. Ardından, fonksiyon parametreleri gelir. Bizim durumumuzda bu, `message` dizgisidir (string). İşte konteyneri kullanan kodun nasıl göründüğü:
+
+```javascript
+const publish = container.get('postToFacebook');
+
+publish('What a beautiful day!');
+```
+
+Konteynerin `get` metodu, ihtiyaç duyulan bağımlılıkları çözer ve geriye sadece `message` gerektiren bir fonksiyon alırız.
