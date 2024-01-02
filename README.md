@@ -49,6 +49,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 37 | [Kısmi Uygulama](#37-kısmi-uygulama)                                                                                       |
 | 38 | [Currying](#38-currying)                                                                                                   |
 | 39 | [Bağımlılık Enjeksiyonu](#39-bağımlılık-enjeksiyonu)                                                                       |
+| 40 | [Durum Makineleri](#40-durum-makineleri)                                                                                   |
 
 ------
 
@@ -1860,3 +1861,71 @@ publish('What a beautiful day!');
 ```
 
 Konteynerin `get` metodu, ihtiyaç duyulan bağımlılıkları çözer ve geriye sadece `message` gerektiren bir fonksiyon alırız.
+
+---
+
+### 40. Durum Makineleri
+
+![#State machines](https://50tips.dev/tip-assets/40/art.jpg)
+
+Durum makineleri, programlamadaki diğer her tasarım kalıbı kadar eşit şekilde öğretilmelidir. İlginç bir şekilde, bu kavramı keşfettikten sonra durum makinelerini her yerde görmeye başladım, özellikle birçok durumu yönetmemiz gereken kullanıcı arayüzlerinin geliştirilmesinde. Peki, bir durum makinesi nedir? Matematiksel açıklama şudur: Durum makinesi, hesaplamanın bir modelidir. Matematiksel olmayan (benim tanımım) ise şöyledir: Durum makinesi, durumunuzu tutan ve girdiye ve mevcut değere bağlı olarak bunu değiştiren bir kutudur.
+
+Farklı türde durum makineleri vardır. Bizim ilgilendiğimiz tür, limitli durum makinesi olarak adlandırılır. Adından da anlaşılacağı gibi, sınırlı sayıda olası duruma sahiptir. Uygulamanızın koşullarının bir haritasını ve farklı değerler arasındaki kesin çizgileri düşünün.
+
+Konsepti açıklamak için, bir asansör için yazılım yazacağız. Asansörümüz basit bir tane ve şu durumlarda olabilir: "idle", "moving" ve "broken".
+
+Yani, bu, olası durumların sonlu bir sayısıdır (3). Bir durumdan diğerine geçişleri de tanımlayabiliriz:
+
+```javascript
+idle --- move --> moving
+moving --- stop --> idle
+moving --- error --> broken
+```
+
+Burada, makineyi doğru bir şekilde uygularsak, yanlış geçişleri önleyeceğimiz en önemli faydalardan birini görebiliriz. Örneğin, "idle" durumundan doğrudan "stop" durumuna veya "move" durumundan doğrudan "idle" durumuna geçemezsiniz. İşte bu, JavaScript'te nasıl görünür:
+
+```javascript
+function createEscalator() {
+  let currentState = 'idle';
+  const transitions = {
+    idle: {
+      move: () => {
+        currentState = 'moving';
+      }
+    },
+    moving: {
+      stop: () => {
+        currentState = 'idle';
+      },
+      error: () => {
+        currentState = 'broken';
+      }
+    },
+    broken: {}
+  }
+
+  return (action) => {
+    if (transitions[currentState][action]) {
+      transitions[currentState][action]();
+    } else {
+      console.warn(
+        `"${action}" is forbidden while in "${currentState}" state.`
+      )
+    }
+  }
+}
+```
+
+Makinemizin API'sı, bir eylemi kabul eden tek bir fonksiyondur. Makine içsel olarak, eylemin mevcut durum bağlamında anlamlı olup olmadığını kontrol eder. Eğer anlamlı değilse, hiçbir şey yapmaz ve bir uyarı mesajı yazdırır.
+
+```javascript
+const escalator = createEscalator();
+escalator('move'); // success
+escalator('move'); // "move" is forbidden while in "moving" state.
+escalator('stop'); // success
+escalator('move'); // success
+escalator('error'); // success
+escalator('stop'); // "stop" is forbidden while in "broken" state.
+```
+
+Makine "broken" duruma düştüğünde hiçbir geçiş yapmadığımıza dikkat edin. Makineyi yeniden başlatmamız gerekiyor ki, tekrar çalışmaya başlasın.
