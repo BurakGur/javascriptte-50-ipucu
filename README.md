@@ -50,6 +50,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 38 | [Currying](#38-currying)                                                                                                   |
 | 39 | [Bağımlılık Enjeksiyonu](#39-bağımlılık-enjeksiyonu)                                                                       |
 | 40 | [Durum Makineleri](#40-durum-makineleri)                                                                                   |
+| 41 | [Reducer'lar](#41-reducerlar)                                                                                              |
 
 ------
 
@@ -1929,3 +1930,32 @@ escalator('stop'); // "stop" is forbidden while in "broken" state.
 ```
 
 Makine "broken" duruma düştüğünde hiçbir geçiş yapmadığımıza dikkat edin. Makineyi yeniden başlatmamız gerekiyor ki, tekrar çalışmaya başlasın.
+
+---
+
+### 41. Reducer'lar
+
+![#Reducers](https://50tips.dev/tip-assets/41/art.jpg)
+
+Durum makinesinin ne olduğunu öğrendiğimize göre, reducer'lardan bahsedebiliriz. Bu terim, özellikle Redux kütüphanesiyle popüler hale geldi ve bu kütüphanedeki ana oyuncudur. Reducer, fazlasıyla bir durum makinesine benzer. Tanım olarak, reducer, mevcut durumu ve bir eylemi kabul eden ve yeni bir durum döndüren bir fonksiyondur.
+
+```javascript
+let state = 0;
+const actions = [
+  'INC', 'INC', 'FOO', 'DEC', 'INC'
+];
+
+function reducer(accumulatedValue, action) {
+  if (action === 'INC') { return accumulatedValue + 1; }
+  if (action === "DEC") { return accumulatedValue - 1; }
+  return accumulatedValue;
+}
+actions.forEach(action => {
+  state = reducer(state, action);
+});
+console.log(state); // 2
+```
+
+Durum makinesinde kullanılan kadar kısıtlayıcı bir modelimiz yok fakat bazı benzerlikler mevcut. Reducer, mevcut değerine ve gelen eyleme bağlı olarak bir sonraki durumu seçer.
+
+Reducer'ların kavramı, başka bir ilginç konuya - değişmezliğe (immutability) - dokunur. Redux gibi kütüphanelerde bu, ana fikirlerden biridir. Mevcut durumu değiştirmek yerine, her değişiklikten sonra yeni bir durum üreten bir durum yönetimi. Anahtar-değer çiftlerine sahip bir nesnemiz olduğunu ve değerleri güncellemek yerine, tüm nesneyi tekrar oluşturduğumuzu düşünün. Belki bu kötü bir fikir gibi geliyor, ama aslında iyi işliyor.
