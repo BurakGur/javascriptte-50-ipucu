@@ -51,6 +51,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 39 | [Bağımlılık Enjeksiyonu](#39-bağımlılık-enjeksiyonu)                                                                       |
 | 40 | [Durum Makineleri](#40-durum-makineleri)                                                                                   |
 | 41 | [Reducer'lar](#41-reducerlar)                                                                                              |
+| 42 | [Flux Mimarisi](#42-flux-mimarisi)                                                                                         |
 
 ------
 
@@ -1959,3 +1960,69 @@ console.log(state); // 2
 Durum makinesinde kullanılan kadar kısıtlayıcı bir modelimiz yok fakat bazı benzerlikler mevcut. Reducer, mevcut değerine ve gelen eyleme bağlı olarak bir sonraki durumu seçer.
 
 Reducer'ların kavramı, başka bir ilginç konuya - değişmezliğe (immutability) - dokunur. Redux gibi kütüphanelerde bu, ana fikirlerden biridir. Mevcut durumu değiştirmek yerine, her değişiklikten sonra yeni bir durum üreten bir durum yönetimi. Anahtar-değer çiftlerine sahip bir nesnemiz olduğunu ve değerleri güncellemek yerine, tüm nesneyi tekrar oluşturduğumuzu düşünün. Belki bu kötü bir fikir gibi geliyor, ama aslında iyi işliyor.
+
+---
+
+### 42. Flux Mimarisi
+
+![#Flux architecture](https://50tips.dev/tip-assets/42/art.jpg)
+
+Flux mimarisi, ekosistemin yeni bir şeyle değiştirdiği popüler şeylerden biridir. React'ın ilk günlerinde, bu desen birçok soruya verilen cevaptı. Facebook'un framework'ü birkaç harika fikirle geldi, ancak bir şey eksikti: Durumu nasıl ve nerede yönetiriz? Facebook'un cevabı ise Flux mimarisi oldu.
+
+Fikir, durumumuzu birden çok store'da tutmaktır. Bir dispatcher (gönderici) eylemleri alır ve bunları her bir store'a iletir. Store kendi içerisinde eylemin anlamlı olup olmadığına karar verir. Belki durumunu değiştirir, belki değiştirmez. Bir değişiklik durumunda, görünümleri (React component'leri) bilgilendirir.
+
+Bu bölümde, bu deseni uygulayacağız. İlk olarak, dispatcher'ı yazarak başlayalım.
+
+```javascript
+const D = (function () {
+  const stores = [];
+  return {
+    register: function (store) {  
+      stores.push(store);
+    },
+    dispatch: function (action) {
+      stores.forEach(function (s) {
+        s.update(action);
+      });
+    }
+  }
+})();
+```
+
+Flux kütüphanelerinin onlarca örneği bulunmaktadır ve çoğu Flux dispatcher'ının bu tür bir API'ye sahiptir. Bir store'u kaydetmek için bir method ve action'ları iletmek için başka bir yöntem. Store'ların bir güncelleme methoduna sahip olacağını varsayıyoruz. Bu, action'ı alacak olan fonksiyondur.
+
+Örneği biraz daha ilginç hale getirmek için iki store kullanacağız. Diyelim ki bir veri akışımız var. İlk store sadece sayıları toplayacak ve ikincisi ise yalnızca harfleri. Görünüm, sadece her iki store'daki içeriği gösteren basit bir fonksiyon olacaktır.
+
+```javascript
+const Numbers = {
+  data: [],
+  update(action) {
+    if (typeof action.payload === 'number') {
+      this.data.push(action.payload); renderView();
+    }
+  }
+}
+const Letters = {
+  data: [],
+  update(action) {
+    if (typeof action.payload === 'string') {
+      this.data.push(action.payload); renderView();
+    }
+  }
+}
+function renderView() {
+  console.log(Numbers.data, Letters.data);
+}
+```
+
+Sonunda, biz bazı action'ları dispatch ediyoruz.
+
+```javascript
+D.dispatch({ payload: 'A' }); // [], ['A']
+D.dispatch({ payload: 'B' }); // [], ['A', 'B']
+D.dispatch({ payload: 5 }); // [5], ['A', 'B']
+D.dispatch({ payload: 'C' }); // [5], ['A', 'B', 'C']
+D.dispatch({ payload: 6 }); // [5, 6], ['A', 'B', 'C']
+```
+
+En önemli özellik, verinin tek yönlü akmasıdır. Action'lar store'lara yönlendirilir. Eğer durum değişirse, görünümler tekrar render edilir.
