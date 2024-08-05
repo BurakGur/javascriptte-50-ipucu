@@ -2026,3 +2026,70 @@ D.dispatch({ payload: 6 }); // [5, 6], ['A', 'B', 'C']
 ```
 
 En önemli özellik, verinin tek yönlü akmasıdır. Action'lar store'lara yönlendirilir. Eğer durum değişirse, görünümler tekrar render edilir.
+
+---
+
+### 43. Redux
+
+![#Redux](https://50tips.dev/tip-assets/43/art.jpg)
+
+Bu kitapta, Flux mimarisi bölümü bilinçli olarak Redux'tan önce yer alır. Tarihsel olarak Redux, Flux'tan sonra gelişmiştir ve neredeyse aynı yapıyı barındırır. Tek yönlü veri akışı burada da devam etmektedir. Biz yine aksiyonlar gönderir ve view'larımız store değişikliklerine subscribe olur. Ancak Redux'ta tek bir mağaza bulunur. Düzeni sağlamak için "dilimler" adında yapılar oluşturulması gerekir. Her dilim, aksiyonları ve mevcut state'i kabul eden bir fonksiyona sahiptir. Bu fonksiyon, bir sonraki state'İn ne olacağına karar verir. Bu fonksiyonlara reducers denir.
+
+Flux'a benzer şekilde, Redux da birçok farklı şekilde uygulanabilir ve bu pattern bir standart haline gelmiştir. Bu yüzden, topluluk bunun için çeşitli araçlar ve yardımcılar geliştirmektedir. Burada göreceğiniz kod, action creators ve selectors içermemektedir. İsimlerinden de anlaşılacağı gibi, bunlar aksiyonlar oluşturmak ve store'dan veri çekmek için kullanılır. Basitlik adına, bu özellikleri uygulamayacağız. Önceki bölümdeki örneği kullanacağız; burada sayılar ve harfler üzerinden işlemler gerçekleştirilmişti.
+
+Aşağıdaki fonksiyon bize Redux patern'inin temelini sunar: aksiyonların gönderilmesi, state'in değişmez bir şekilde güncellenmesi ve değişiklikler için subscription.
+
+```js
+function configure(slices) {
+  const state = {};
+  const views = [];
+  return {
+    dispatch(action) {
+      Object.keys(slices).forEach(key => {
+        state[key] = slices[key](state[key], action);
+      });
+      views.forEach(view => view(state));
+    },
+    connect(view) {
+      views.push(view);
+    }
+  }
+}
+```
+
+Store'umuz, harfleri ve sayıları tutan iki farklı dilime sahip olacak.
+
+```js
+const { dispatch, connect } = configure({
+  letters(state = [], action) {
+    if (typeof action.payload === 'string') {
+      return [...state, action.payload];
+    }
+    return state;
+  },
+  numbers(state = [], action) {
+    if (typeof action.payload === 'number') {
+      return [...state, action.payload];
+    }
+    return state;
+  }
+});
+```
+
+`configure` fonksiyonuna ilettiğimiz şeyler, reducer'larımızdır. Mevcut state'i ve aksiyonu alırlar. Sonuç olarak, state'in yeni bir versiyonunu (veya değişiklik olmadıysa aynı array'i) döndürmelidirler.
+
+İşte her şeyin nasıl çalıştığını gösteren bir demo:
+
+```js
+connect(state => console.log(
+  `${state.letters} ${state.numbers}`
+));
+dispatch({ payload: 'A' }); // A
+dispatch({ payload: 'B' }); // A, B
+dispatch({ payload: 5 }); // A, B 5
+dispatch({ payload: 'C' }); // A, B, C 5
+dispatch({ payload: 10 }); // A, B, C 5, 10
+```
+
+Buradaki "view", sadece state'deki değerleri yazdıran bir fonksiyondur. Gerçek uygulamada, bu genellikle DOM üzerinde bir şeyleri render eden bir component'dir.
+
