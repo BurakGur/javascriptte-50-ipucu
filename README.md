@@ -52,6 +52,7 @@ Bu kitap JavaScript'teki ufak ipucuları, JavaScript'te geçmişten günümüze 
 | 40 | [Durum Makineleri](#40-durum-makineleri)                                                                                   |
 | 41 | [Reducer'lar](#41-reducerlar)                                                                                              |
 | 42 | [Flux Mimarisi](#42-flux-mimarisi)                                                                                         |
+| 43 | [Redux](#42-redux)                                                                                                         |
 
 ------
 
